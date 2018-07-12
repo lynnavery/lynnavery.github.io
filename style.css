@@ -1,0 +1,75 @@
+* {box-sizing: border-box;}
+
+    .wrapper {
+        max-width: 100%;
+        margin: 0 auto;
+        font: 1.2em Helvetica, arial, sans-serif;
+    }
+
+    .wrapper > * {
+        border: 1px solid red;
+        background-color: white;
+        border-radius: 3px;
+        padding: 10px;
+    }
+
+
+.main-head {
+  grid-area: header;
+}
+.content {
+  grid-area: content;
+}
+.main-nav {
+  grid-area: nav;
+}
+.side {
+  grid-area: sidebar;
+}
+.soundcloud {
+  grid-area: soundcloud;
+}
+
+.ad {
+  grid-area: ad;
+}
+.main-footer {
+  grid-area: footer;
+}
+.wrapper {
+  display: grid;
+  grid-gap: 20px;
+  grid-template-areas: 
+    "header"
+    "mixes"
+    "soundcloud"
+    "content"
+    "sidebar";
+}
+@media (min-width: 500px) {
+  .wrapper {
+    grid-template-columns: 2fr 2fr;
+    grid-template-areas: 
+      "header  header"
+      "soundcloud     mixes"
+      "sidebar content"
+      "ad      footer";
+  }
+  nav ul {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+@media (min-width: 700px) {
+  .wrapper {
+    grid-template-columns: 2fr 2fr 2fr;
+    grid-template-areas: 
+      "header   soundcloud  sidebar"
+      "mixes   content  sidebar"
+  
+     
+   }
+   nav ul {
+     flex-direction: column;
+   }
+}
