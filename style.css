@@ -1,5 +1,8 @@
 * {box-sizing: border-box;}
-
+@font-face {
+    font-family: 'Lars FS GI Mono';
+    src: url('Lars_FS_GI-Mono.woff2') format('woff2');
+  }
     .wrapper {
         max-width: 100%;
         margin: 0 auto;
@@ -7,7 +10,7 @@
     }
 
     .wrapper > * {
-        border: 1px solid red;
+      
         background-color: white;
         border-radius: 3px;
         padding: 10px;
@@ -46,34 +49,34 @@
   .wrapper {
     grid-template-columns: 2fr 2fr;
     grid-template-areas: 
-      "header  header"
-      "soundcloud     mixes"
-      "sidebar contact";
+      "header  mixes"
+      "soundcloud     sidebar"
+      "contact contact "
   }
 
 }
-@media (min-width: 700px) {
+@media (min-width: 740px) {
   .wrapper {
     grid-template-columns: 2fr 2fr 2fr;
     grid-template-areas: 
-      "header   soundcloud  sidebar"
-      "mixes   contact  sidebar"
+      "mixes   soundcloud  header"
+      "sidebar   contact  header"
   
      
    }
 }
+a:visited {color: red;}
 h1{ font-size: 5em; color: red; font-family: "Eagle Lake", serif; text-align: left;
 
     line-height: .5;}
-  h2 {font-family: &#39;Inknut Antiqua&#39;, serif; text-align: center; color: black; line-height:.7;}
-  h3 {font-weight: normal; color: white; text-align: center; font-family: monospace; font-size: .8em;}
-  h3 span{ background-color: grey;}
+  h2 {font-family: "Eagle Lake", serif; text-align: center; color: black; line-height:.7;}
+  h3 {font-weight: normal; color: white; text-align: center; font-family: Lars FS GI Mono,monospace; font-size: .8em;}
+  h3 span{ background-color: black; padding:2px;}
   body{ background-color: white;}
   .btn-group .button {
-    background-color: black;
-    border: 1px solid black;
-    color: white;
-    padding: 15px 32px;
+    background-color: white;
+    color: black;
+    padding: 1px 32px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -81,7 +84,7 @@ h1{ font-size: 5em; color: red; font-family: "Eagle Lake", serif; text-align: le
     cursor: pointer;
     width: 150px;
     display: block;
-    font-family: monospace;
+    font-family:  Lars FS GI Mono, monospace;
     font-size: .8em;
   }
   .btn-group .button:not(:last-child) {
