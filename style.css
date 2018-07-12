@@ -17,11 +17,8 @@
 .main-head {
   grid-area: header;
 }
-.content {
-  grid-area: content;
-}
-.main-nav {
-  grid-area: nav;
+.contact {
+  grid-area: contact;
 }
 .side {
   grid-area: sidebar;
@@ -29,12 +26,11 @@
 .soundcloud {
   grid-area: soundcloud;
 }
-
-.ad {
-  grid-area: ad;
+.mixes{
+    grid-area: mixes;
 }
-.main-footer {
-  grid-area: footer;
+.contact{
+        grid-area: contact
 }
 .wrapper {
   display: grid;
@@ -43,7 +39,7 @@
     "header"
     "mixes"
     "soundcloud"
-    "content"
+    "contact"
     "sidebar";
 }
 @media (min-width: 500px) {
@@ -52,24 +48,45 @@
     grid-template-areas: 
       "header  header"
       "soundcloud     mixes"
-      "sidebar content"
-      "ad      footer";
+      "sidebar contact";
   }
-  nav ul {
-    display: flex;
-    justify-content: space-between;
-  }
+
 }
 @media (min-width: 700px) {
   .wrapper {
     grid-template-columns: 2fr 2fr 2fr;
     grid-template-areas: 
       "header   soundcloud  sidebar"
-      "mixes   content  sidebar"
+      "mixes   contact  sidebar"
   
      
    }
-   nav ul {
-     flex-direction: column;
-   }
 }
+h1{ font-size: 5em; color: red; font-family: "Eagle Lake", serif; text-align: left;
+
+    line-height: .5;}
+  h2 {font-family: &#39;Inknut Antiqua&#39;, serif; text-align: center; color: black; line-height:.7;}
+  h3 {font-weight: normal; color: white; text-align: center; font-family: monospace; font-size: .8em;}
+  h3 span{ background-color: grey;}
+  body{ background-color: white;}
+  .btn-group .button {
+    background-color: black;
+    border: 1px solid black;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    width: 150px;
+    display: block;
+    font-family: monospace;
+    font-size: .8em;
+  }
+  .btn-group .button:not(:last-child) {
+    border-bottom: none; /* Prevent double borders */
+  }
+  .btn-group .button:hover {
+    background-color: #3e8e41;
+  }
