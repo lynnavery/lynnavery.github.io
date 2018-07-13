@@ -87,28 +87,21 @@ h1{
   h3 {font-weight: normal; color: black; text-align: center; font-family: Lars FS GI Mono,monospace; font-size: 1.5em;}
   h2 span{ background-color: black; padding:2px; border-radius: 3px;}
   body{ background-color: white;}
-  .btn-group{margin: -50px;
-padding:50px;
-position: relative;
-z-index: 2;}
-  .btn-group .button {
+  ul{
+      list-style: none;
+       
     background-color: white;
     color: black;
-    padding: 1px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    cursor: pointer;
-    width: 150px;    display: block;
+
     font-family:  Lars FS GI Mono, monospace;
-    font-size: .5em;
+    font-size: 1.5em;
   }
-  .btn-group .button:not(:last-child) {
-    border-bottom: none; /* Prevent double borders */
-  }
-  .btn-group .button:hover {
-    background-color: #3e8e41;
-  }
+  ul li a, a:visited{color:black;
+    text-decoration: none;}
+ul li a:hover{
+     background-color: black;
+     text-decoration: none;
+color:white;}
   .contact{
     background: repeating-linear-gradient(
         45deg,
