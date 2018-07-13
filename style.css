@@ -4,7 +4,7 @@
     src: url('Lars_FS_GI-Mono.woff2') format('woff2');
   }
     .wrapper {
-        max-width: 100%;
+        max-width: 1212PX;
         margin: 0 auto;
         font: 1.2em Helvetica, arial, sans-serif;
     }
@@ -39,7 +39,13 @@
     height: 400px;
 }
 .contact{
-        grid-area: contact
+        grid-area: contact;
+        height: 400px;
+}
+.gallery{
+  grid-area: gallery;
+  height: 400px;
+ 
 }
 .wrapper {
   display: grid;
@@ -49,7 +55,8 @@
     "mixes"
     "soundcloud"
     "sidebar"
-    "contact";
+    "contact"
+    "gallery";
 }
 @media (min-width: 500px) {
   .wrapper {
@@ -57,7 +64,7 @@
     grid-template-areas: 
       "header  mixes"
       "soundcloud     sidebar"
-      "contact contact "
+      "gallery  contact "
   }
 
 }
@@ -67,6 +74,7 @@
     grid-template-areas: 
       "mixes   soundcloud  header"
       "sidebar   contact  header"
+      "gallery contact header"
   
      
    }
@@ -118,3 +126,4 @@ color:white;}
     .sc:hover{
        filter: grayscale(100%);
     }
+    .gallery {filter: grayscale(100%);}

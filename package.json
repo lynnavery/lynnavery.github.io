@@ -1,0 +1,22 @@
+{
+  "name": "lynnavery",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lynnavery/lynnavery.github.io.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lynnavery/lynnavery.github.io/issues"
+  },
+  "homepage": "https://github.com/lynnavery/lynnavery.github.io#readme",
+  "dependencies": {
+    "lightgallery.js": "^1.0.3"
+  }
+}

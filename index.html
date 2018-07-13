@@ -8,8 +8,15 @@
     <link href='https://fonts.googleapis.com/css?family=Eagle+Lake' rel='stylesheet'/>
     <link href='https://fonts.googleapis.com/css?family=Inknut+Antiqua:900|Skranji' rel='stylesheet'/>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="node_modules/lightgallery.js/src/css/lightgallery.css">
   </head>
   <body>
+     <!--#########################################-->
+      <script src="node_modules/lightgallery.js/dist/js/lightgallery.min.js"></script>
+      <!-- lightgallery plugins -->
+
+
+      <!--#########################################-->
     <div class="wrapper">
       <header class="main-head"><h1>Lynn Avery</h1>
 
@@ -55,14 +62,41 @@
       <div class="side">
         
           <h2> <span>mixes</span></h2>
-  <h3><span>
-<a href='https://www.nts.live/shows/yem-gel/episodes/yem-gel-13th-may-2018'>
+    <h3><span>
+     <a href='https://www.nts.live/shows/yem-gel/episodes/yem-gel-13th-may-2018'>
     Track premiere //YemGel// NTS May 12th
-  </a>
-  </span></h3>
+    </a>
+    </span></h3>
+    </div>  
+    <div class="gallery" style="display: grid;grid-gap: 1px;">
+        <div id="lightgallery" ">
+            <a href="img/1.png" class="1">
+              <img src="img/1.png" style="max-width: 198px" />
+            </a>
+            <a href="img/2.png" class="2">
+              <img src="img/2.png" style="max-width: 198PX" />
+            </a>
+            <a href="img/3.png" class="3">
+              <img src="img/3.png" style="max-width: 198px" />
+            </a>
+            <a href="img/4.png" class="1">
+              <img src="img/4.png" style="max-width: 198px" />
+            </a>
+            <a href="img/5.png" class="2">
+              <img src="img/5.png" style="max-width: 200PX" />
+            </a>
+            <a href="img/6.png" class="3">
+              <img src="img/6.png" style="max-width: 200px" />
+            </a>
+            </div>
+            </div>
+    </div>
 
-          </div>
-  
+
+            <script>
+                lightGallery(document.getElementById('lightgallery'));
+
+            </script>
     </div>
   </body>
 </html>
