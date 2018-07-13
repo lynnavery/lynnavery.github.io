@@ -15,8 +15,6 @@
         border-style: solid;
         border-color: red;
         border-width: 1px;
-    
-        padding: 10px;
         overflow: hidden;
     }
 
@@ -48,10 +46,10 @@
   grid-gap: 1px;
   grid-template-areas: 
     "header"
-    "contact"
     "mixes"
     "soundcloud"
-    "sidebar";
+    "sidebar"
+    "contact";
 }
 @media (min-width: 500px) {
   .wrapper {
@@ -74,19 +72,20 @@
    }
 }
 a:visited {color: red;}
-h1{ padding-left:50px;
+h1{
     padding-top:40px;
+    padding-left: 40px;
     font-size: 5em; color: red;
      font-family: "Eagle Lake", serif; 
      text-align: left;
     line-height: .8em;
     transform: skewY(20deg);
-    transform: scaleY(4.5);
+ 
     position: relative;
     z-index: 1;}
-  h2 {font-family: "Eagle Lake", serif; text-align: center; color: black; line-height:.7; font-size: 0.5em;}
-  h3 {font-weight: normal; color: white; text-align: center; font-family: Lars FS GI Mono,monospace; font-size: .5em;}
-  h3 span{ background-color: black; padding:2px;}
+  h2 {font-family: Lars FS GI Mono,monospace; text-align: center; color: white; font-size: 1.5em;}
+  h3 {font-weight: normal; color: black; text-align: center; font-family: Lars FS GI Mono,monospace; font-size: 1.5em;}
+  h2 span{ background-color: black; padding:2px; border-radius: 3px;}
   body{ background-color: white;}
   .btn-group{margin: -50px;
 padding:50px;
@@ -99,10 +98,8 @@ z-index: 2;}
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
     cursor: pointer;
-    width: 150px;
-    display: block;
+    width: 150px;    display: block;
     font-family:  Lars FS GI Mono, monospace;
     font-size: .5em;
   }
@@ -119,5 +116,12 @@ z-index: 2;}
         red 1px,
         white 1px,
         white 20px)
+       
   
   }
+  .sc{   -webkit-filter: blur(5px);
+    filter: blur(5px) grayscale(100%);
+    -webkit-filter:blur(5px) grayscale(100%) ;}
+    .sc:hover{
+       filter: grayscale(100%);
+    }
