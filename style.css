@@ -17,12 +17,14 @@
         border-width: 1px;
         overflow: hidden;
         padding:25px;
+        
     }
 
 
 .main-head {
   grid-area: header;
 }
+.main-head:hover{filter: hue-rotate(40deg);}
 .contact {
   grid-area: contact;
   height: 350px;
@@ -150,10 +152,14 @@ color:white;}
     background-image: url(img/swan.png);
     background-size: 100%;
   }
-  .sc{   -webkit-filter: blur(5px);
-    filter: blur(5px) grayscale(100%);
-    -webkit-filter:blur(5px) grayscale(100%) ;}
-    .sc:hover{
-       filter: grayscale(100%);
-    }
+  .soundcloud{
+    padding: 0;
+  }
+  .sc{ 
+    padding: 0;
+    filter: invert(100%) grayscale(100%);
+    -webkit-filter:invert(100%) grayscale(100%) ;}
+
     .gallery {filter: grayscale(100%);}
+    .swan:hover {background-image:url(img/swan2.png);}
+    .sc:hover {}
