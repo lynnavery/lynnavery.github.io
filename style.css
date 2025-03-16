@@ -1,15 +1,197 @@
-@property --_w {
-  syntax: '<length>';
-  inherits: true;
-  initial-value: 100vw; 
+* {
+	box-sizing: border-box;
 }
-@property --_h {
-  syntax: '<length>';
-  inherits: true;
-  initial-value: 100vh; 
+
+html {
+	/*background-color: #fcffa8;*/
+	background-color: white;
+/*	background-image: url("images/drawingedit2.jpg");
+  	background-repeat: no-repeat;
+  	background-attachment: fixed;
+  	background-position: 0% 80%;
+  	background-size: 110%;*/
 }
-:root {
-  --w: tan(atan2(var(--_w),1px)); /* screen width */
-  --h: tan(atan2(var(--_h),1px)); /* screen height*/
-  /* The result is an integer without unit  */
+
+body { 
+/*	font-family:'Bitter', serif;*/
+	color: black;
+	margin-top: 4%;
+	margin-bottom: 4%;
+	margin-left: 12.5%;
+	margin-right: 12.5%;
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    font-size: 60%;
+    margin-top: 5%;
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+  ul {
+	display: flex; 
+	left: 0;  
+  }
+  .nav{
+/*  	float: left;*/
+  }
+  .menu{
+/*  	right: 0;*/
+  }
+  table{
+  	padding: 5px;
+  }
+  td {
+  	padding: 5px;
+  }
+}
+
+li {
+	list-style: none;
+/*	position: relative;*/
+	padding-left: 15px;
+/*	margin-top: 3%;*/
+/*	border: 2px solid black;*/
+	display: inline-block;
+}
+
+a {
+	text-decoration: none;
+	color: black;
+}
+a:hover {
+	text-decoration: underline;
+}
+table {
+	border-collapse: collapse;
+	font-size: 100%;
+	padding: 10px;
+/*	margin: 40px;*/
+}
+
+td {
+/*  	border: 2px solid black;*/
+  	padding: 10px;
+  	background-color: white;
+  	text-align: left;
+  	vertical-align: top;
+}
+
+th {
+	background: white;
+	color: black;
+	padding: 10px;
+/*	border: 2px solid black;*/
+}
+
+.nav {
+	display: inline-block;
+	float: left;
+	font-size: 150%;
+	padding: 10px;
+/*	margin-top: 3%;*/
+/*	margin-left: 12.5%;*/
+/*	padding-top: 1.3%;*/
+}
+.menu {
+	display: inline-block;
+	float: right;
+	font-size: 150%;
+	padding: 10px;
+/*	padding-bottom: 2.25%;*/
+/*	margin-right: 12.5%;*/
+}
+.title {
+	text-decoration: underline;
+/*	position: relative;*/
+/*	padding: 10px;*/
+
+}
+.link {
+	color: black;
+	text-decoration: none;
+}
+.homeimg {
+	width: 100%;
+/*	margin-top: 1%;*/
+/*	margin-left: 12.5%;*/
+/*	border: 2px solid black;*/
+}
+
+.infotable {
+	display: inline-block;
+	float: right;
+	margin-top: 3%;
+/*	margin-left: 12.5%;*/
+	width: 100%;
+}
+.releasestable {
+	display: inline-block;
+	float: right;
+	margin-top: 3%;
+/*	margin-left: 12.5%;*/
+	width: 50%;
+}
+.releasesimg{
+	display: inline-block;
+	float: left;
+	margin-top: 3%;
+/*	margin-right: 12.5%;*/
+	width: 50%;
+}
+
+.commstable {
+	display: inline-block;
+	float: right;
+	margin-top: 3%;
+/*	margin-left: 12%;*/
+	width: 60%;
+}
+
+.commsimg{
+	display: inline-block;
+	float: left;
+	margin-top: 3%;
+	padding-top: 20px;
+	padding-right: 10px;
+/*	margin-right: 12.5%;*/
+	width: 40%;
+}
+.perftable{
+	display: inline-block;
+	float: right;
+	margin-top: 3%;
+/*	margin-left: 12%;*/
+	width: 50%;
+}
+.perfimg{
+	display: inline-block;
+	float: left;
+	margin-top: 3%;
+	padding-top: 20px;
+	padding-right: 10px;
+/*	margin-right: 12.5%;*/
+	width: 50%;
+}
+.contacttable{
+	display: inline-block;
+	float: right;
+	margin-top: 3%;
+	width: 70%;
+/*	margin-left: 12%;*/
+}
+.contactimg{
+	display: inline-block;
+	float: left;
+	margin-top: 3%;
+/*	margin-right: 12.5%;*/
+	width: 30%;
+	padding-top: 20px;
+	padding-right: 10px;
+}
+.soundtable{
+	display: inline-block;
+	margin-top: 3%;
+	width: 100%;
+/*	margin-left: 12%;*/
 }
