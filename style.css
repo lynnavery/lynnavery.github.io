@@ -3,11 +3,10 @@
 }
 
 html {
-	background-color: white;
+	background-color: black;
 
 body { 
-/*	font-family:'Bitter', serif;*/
-	color: black;
+	color: rgb(255, 255, 255);
 	margin-top: 4%;
 	margin-bottom: 4%;
 	margin-left: 12.5%;
@@ -71,8 +70,8 @@ td {
 }
 
 th {
-	background: white;
-	color: black;
+	background: rgb(0, 0, 0);
+	color: rgb(255, 255, 255);
 	padding: 10px;
 /*	border: 2px solid black;*/
 }
@@ -101,7 +100,7 @@ th {
 
 }
 .link {
-	color: black;
+	color: rgb(255, 255, 255);
 	text-decoration: none;
 }
 .homeimg {
