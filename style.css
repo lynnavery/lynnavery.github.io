@@ -1,112 +1,80 @@
-* {
+/* Retro Terminal Theme */
+table {
+	border-collapse: separate;
+	border-spacing: 5px;
+	width: 100%;
+}
+ul.contact li {
+	list-style: none;
+}
+.nav {
+	background-color: #111;
+	padding: 10px;
+	text-align: center;
+	border-top: 2px solid #ffffff;
+	border-bottom: 2px solid #ffffff;
+}
+table td, table th {
+	border: 3px double #ffffff;
+	padding: 5px;
 	box-sizing: border-box;
 }
-
-html {
-	background-color: rgb(0, 0, 0);
-body { 
-	color: rgb(0, 0, 0);
-	margin-top: 4%;
-	margin-bottom: 4%;
-	margin-left: 12.5%;
-	margin-right: 12.5%;
-}
-
-@media only screen and (max-width: 600px) {
-  body {
-    font-size: 60%;
-    margin-top: 5%;
-    margin-left: 10%;
-    margin-right: 10%;
-  }
-  ul {
-	display: flex; 
-	list-style: square;
-	left: 0;  
-  }
-  .nav{
-/*  	float: left;*/
-  }
-  .menu{
-/*  	right: 0;*/
-  }
-  table{
-  	padding: 5px;
-  }
-  td {
-  	padding: 5px;
-  }
-}
-
-li {
-	list-style: square;
-/*	position: relative;*/
-	padding-left: 5px;
-	margin-bottom: 5px;
-/*	margin-top: 3%;*/
-	display: inline-block;
+body {
+	background-color: black;
+	color: #ffffff;
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 16px;
+	line-height: 1.5;
+	margin: 0;
+	padding: 0;
 }
 
 a {
+	color: #ffffff;
 	text-decoration: none;
-
 }
+
 a:hover {
 	text-decoration: underline;
 }
-table {
-	border-collapse: collapse;
-	font-size: 100%;
+
+header, footer {
+	background-color: #111;
 	padding: 10px;
-/*	margin: 40px;*/
+	text-align: center;
+	border-top: 2px solid #ffffff;
+	border-bottom: 2px solid #ffffff;
 }
 
-td {
-/*  	border: 2px solid black;*/
-  	padding: 10px;
-  	background-color: white;
-  	text-align: left;
-  	vertical-align: top;
+button {
+	background-color: black;
+	color: #ffffff;
+	border: 1px solid #ffffff;
+	padding: 5px 10px;
+	font-family: 'Courier New', Courier, monospace;
+	cursor: pointer;
 }
 
-th {
-	background: rgb(0, 0, 0);
-	color: rgb(255, 255, 255);
-	padding: 10px;
-/*	border: 2px solid black;*/
+button:hover {
+	background-color: #ffffff;
+	color: black;
 }
 
-.nav {
-	display: inline-block;
-	float: left;
-	font-size: 150%;
-	padding: 10px;
-}
-.menu {
-	display: inline-block;
-	float: right;
-	font-size: 150%;
-	padding: 10px;
-/*	padding-bottom: 2.25%;*/
-/*	margin-right: 12.5%;*/
-}
-.title {
-	text-decoration: underline;
-/*	position: relative;*/
-/*	padding: 10px;*/
-
-}
-.link {
-	color: rgb(255, 255, 255);
-	text-decoration: underline;
+input, textarea {
+	background-color: black;
+	color: #ffffff;
+	border: 1px solid #ffffff;
+	font-family: 'Courier New', Courier, monospace;
 }
 
-
-.infotable {
-	display: inline-block;
-	float: right;
-	margin-top: 3%;
-/*	margin-left: 12.5%;*/
-	width: 100%;
+::selection {
+	background-color: #ffffff;
+	color: black;
 }
+#cat {
+	background-image: url('/img/cats.jpg');
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	height: 800px;
 }
