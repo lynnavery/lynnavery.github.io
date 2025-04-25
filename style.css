@@ -2,6 +2,9 @@
 ul.contact li {
 	list-style: none;
 }
+ul li {
+	list-style: none;
+}
 .nav {
 	background-color: #111;
 	padding: 10px;
@@ -24,7 +27,15 @@ a {
 	color: #ffffff;
 	text-decoration: none;
 }
+button a {
+    color: inherit; /* Inherit the button's text color */
+    text-decoration: none; /* Remove underline from links */
+}
 
+button a:hover {
+	color: #000;
+	text-decoration: none;
+}
 a:hover {
 	text-decoration: underline;
 }
@@ -48,9 +59,12 @@ button {
 	background-color: black;
 	color: #ffffff;
 	border: 1px solid #ffffff;
-	padding: 5px 10px;
-	font-family: 'Courier New', Courier, monospace;
+	margin: 1px;
+    font-family: inherit; /* Inherit font family from body */
+    font-size: inherit; /* Inherit font size from body */
+    line-height: inherit; /* Inherit line height from body */
 	cursor: pointer;
+	text-align: left;;
 }
 
 button:hover {
