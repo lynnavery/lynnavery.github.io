@@ -1,9 +1,4 @@
 /* Retro Terminal Theme */
-table {
-	border-collapse: separate;
-	border-spacing: 5px;
-	width: 100%;
-}
 ul.contact li {
 	list-style: none;
 }
@@ -15,12 +10,6 @@ ul.contact li {
 	border-bottom: 2px solid #ffffff;
 	margin-bottom: 10px;
 }
-table td, table th {
-	border: 3px double #ffffff;
-	padding: 5px;
-	box-sizing: border-box;
-}
-
 body {
 	background-color: black;
 	color: #ffffff;
@@ -80,40 +69,17 @@ input, textarea {
 	background-color: #ffffff;
 	color: black;
 }
+.grid-item img {
+    width: 100%; /* Make the image fill the width of the grid item */
+    height: auto; /* Maintain the aspect ratio */
+    object-fit: unset; /* Ensure the image fits within the grid item */
+    object-position: bottom;
+	max-height: auto; /* Prevent the image from exceeding the grid item's height */
+    display: block; /* Remove any inline spacing below the image */
+}
 /* Responsive Styles */
-@media (max-width: 768px) {
-    body {
-        font-size: 18px; /* Larger text on mobile */
-    }
 
-    table {
-        display: grid;
-        grid-template-columns: 1fr; /* Single column on smaller screens */
-        grid-gap: 10px;
-    }
 
-    table td {
-        width: 100%;
-        text-align: center;
-    }
-
-    .nav {
-        font-size: 20px; /* Larger navigation text */
-    }
-}
-
-@media (min-width: 769px) {
-    table {
-		width: 100%;
-        display: grid;
-        grid-template-columns: repeat(2, 1fr); /* 2 columns for larger screens */
-        grid-gap: 10px;
-    }
-
-    table td {
-        width: 100%;
-    }
-}
 .grid-container {
     display: grid;
     grid-template-columns: 1fr; /* Single column on mobile */
@@ -121,22 +87,29 @@ input, textarea {
     width: 100%;
 
 }
-
+.grid-item::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in WebKit browsers (Chrome, Safari) */
+}
 .grid-item {
     border: 3px double #ffffff;
     padding: 5px;
     box-sizing: border-box;
     text-align: left;
+	display: flex;
+	overflow: scroll;
+	flex-direction: column;
+	justify-content: left;
+	align-items: left;
+	height: 100%;
 }
 
 @media (min-width: 769px) {
 	body {
-		overflow: hidden;
 		height: 100vh;
 	}
     .grid-container {
         grid-template-columns: repeat(2, 1fr); /* 2 columns on desktop */
 		height: calc(100vh - 80px);
-		overflow-y: hidden;
+		
     }
 }
