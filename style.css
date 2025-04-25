@@ -13,6 +13,11 @@ ul li {
 	border-bottom: 2px solid #ffffff;
 	margin-bottom: 10px;
 }
+.date {
+	text-align: center;
+	color: #ffffff;
+	margin-bottom: 10px;
+}
 body {
 	background-color: black;
 	color: #ffffff;
@@ -123,7 +128,7 @@ input, textarea {
 	}
     .grid-container {
         grid-template-columns: repeat(2, 1fr); /* 2 columns on desktop */
-		height: calc(100vh - 80px);
+		height: calc(100vh - 124px);
 		
     }
 }
