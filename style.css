@@ -71,10 +71,3 @@ input, textarea {
 	background-color: #ffffff;
 	color: black;
 }
-#cat {
-	background-image: url('/img/cats.jpg');
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
-	height: 800px;
-}
