@@ -21,11 +21,12 @@ ul li {
 body {
 	background-color: black;
 	color: #ffffff;
-	font-family: 'Courier New', Courier, monospace;
+	font-family: 'Courier New', Courier, monospace, monospace;
 	font-size: 16px;
 	line-height: 1.5;
 	margin: 0;
 	padding: 0;
+
 }
 
 a {
@@ -70,6 +71,7 @@ button {
     line-height: inherit; /* Inherit line height from body */
 	cursor: pointer;
 	text-align: left;;
+
 }
 
 button:hover {
@@ -81,8 +83,7 @@ input, textarea {
 	background-color: black;
 	color: #ffffff;
 	border: 1px solid #ffffff;
-	font-family: 'Courier New', Courier, monospace;
-}
+	font-family: 'Courier New', Courier, monospace;}
 
 ::selection {
 	background-color: #ffffff;
