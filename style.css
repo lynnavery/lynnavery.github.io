@@ -107,6 +107,14 @@ input, textarea {
     width: 100%;
 
 }
+.subgrid-container {
+	display: grid;
+	grid-template-columns:  1fr; /* Single column on mobile */
+	grid-template-rows: repeat(auto-fill, minmax(100px, 1fr)); /* Auto-fill rows */
+	grid-auto-flow: dense; /* Fill rows before columns */
+	grid-gap: 10px;
+	width: 100%;
+}
 .grid-item::-webkit-scrollbar {
     display: none; /* Hide scrollbar in WebKit browsers (Chrome, Safari) */
 }
@@ -122,14 +130,43 @@ input, textarea {
 	align-items: left;
 	height: 100%;
 }
+.subgrid-item {
+	border: 3px double #ffffff;
+	padding: 5px;
+	box-sizing: border-box;
+	text-align: left;
+	display: flex;
+	overflow: scroll;
+	flex-direction: column;
+	justify-content: left;
+	align-items: left;
+	height: 100%;
+}
 
 @media (min-width: 769px) {
 	body {
-		height: 100vh;
+		height: 100vh; /* Adjust body height for desktop */
 	}
     .grid-container {
         grid-template-columns: repeat(2, 1fr); /* 2 columns on desktop */
-		height: calc(100vh - 124px);
+		height: calc(100vh - 84px);
 		
     }
+	.subgrid-container {
+		grid-template-columns: repeat(2, 1fr); /* 2 columns on desktop */
+		height: auto;
+	}
+	.grid-item {
+		height: auto; /* Allow grid items to grow with content */
+	}
+}
+img { 
+    image-rendering: optimizeSpeed;             /* STOP SMOOTHING, GIVE ME SPEED  */
+    image-rendering: -moz-crisp-edges;          /* Firefox                        */
+    image-rendering: -o-crisp-edges;            /* Opera                          */
+    image-rendering: -webkit-optimize-contrast; /* Chrome (and eventually Safari) */
+    image-rendering: pixelated;                 /* Universal support since 2021   */
+    image-rendering: optimize-contrast;         /* CSS3 Proposed                  */
+    -ms-interpolation-mode: nearest-neighbor;   /* IE8+                           */
+
 }
