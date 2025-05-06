@@ -6,21 +6,21 @@ ul li {
 	list-style: none;
 }
 .nav {
-	background-color: #111;
+	background-color: #FFF8E8;
 	padding: 10px;
 	text-align: center;
-	border-top: 2px solid #ffffff;
-	border-bottom: 2px solid #ffffff;
+	border-top: 2px solid #0E1C36;
+	border-bottom: 2px solid #0E1C36;
 	margin-bottom: 10px;
 }
 .date {
 	text-align: center;
-	color: #ffffff;
+	color: #0E1C36;
 	margin-bottom: 10px;
 }
 body {
-	background-color: black;
-	color: #ffffff;
+	background-color: #FFF8E8;
+	color: #0E1C36;
 	font-family: 'Courier New', Courier, monospace, monospace;
 	font-size: 16px;
 	line-height: 1.5;
@@ -30,7 +30,7 @@ body {
 }
 
 a {
-	color: #ffffff;
+	color: #0E1C36;
 	text-decoration: none;
 }
 button a {
@@ -39,7 +39,7 @@ button a {
 }
 
 button a:hover {
-	color: #000;
+	color: #FFF8E8;
 	text-decoration: none;
 }
 a:hover {
@@ -50,8 +50,8 @@ header, footer {
 	background-color: #111;
 	padding: 10px;
 	text-align: center;
-	border-top: 2px solid #ffffff;
-	border-bottom: 2px solid #ffffff;
+	border-top: 2px solid #0E1C36;
+	border-bottom: 2px solid #0E1C36;
 
 }
 h1 {
@@ -62,9 +62,9 @@ h1 {
 	text-align: center;
 }
 button {
-	background-color: black;
-	color: #ffffff;
-	border: 1px solid #ffffff;
+	background-color: FFF8E8;
+	color: #0E1C36;
+	border: 1px solid #0E1C36;
 	margin: 1px;
     font-family: inherit; /* Inherit font family from body */
     font-size: inherit; /* Inherit font size from body */
@@ -75,8 +75,8 @@ button {
 }
 
 button:hover {
-	background-color: #ffffff;
-	color: black;
+	background-color: #0E1C36;
+	color: rgb(255, 255, 255);
 }
 
 input, textarea {
@@ -119,7 +119,7 @@ input, textarea {
     display: none; /* Hide scrollbar in WebKit browsers (Chrome, Safari) */
 }
 .grid-item {
-    border: 3px double #ffffff;
+    border: 3px double #0E1C36;
     padding: 5px;
     box-sizing: border-box;
     text-align: left;
@@ -131,7 +131,7 @@ input, textarea {
 	height: 100%;
 }
 .subgrid-item {
-	border: 3px double #ffffff;
+	border: 3px double #0E1C36;
 	padding: 5px;
 	box-sizing: border-box;
 	text-align: left;
@@ -143,23 +143,29 @@ input, textarea {
 	height: 100%;
 }
 
-@media (min-width: 769px) {
+@media (max-width: 768px) {
+	ul {
+		padding-inline-start: 0px;
+	}
+	
+}
+/* @media (min-width: 769px) {
 	body {
-		height: 100vh; /* Adjust body height for desktop */
+		height: 100vh; 
 	}
     .grid-container {
-        grid-template-columns: repeat(2, 1fr); /* 2 columns on desktop */
+        grid-template-columns: repeat(2, 1fr);
 		height: calc(100vh - 84px);
 		
     }
 	.subgrid-container {
-		grid-template-columns: repeat(2, 1fr); /* 2 columns on desktop */
+		grid-template-columns: repeat(2, 1fr);
 		height: auto;
 	}
 	.grid-item {
-		height: auto; /* Allow grid items to grow with content */
+		height: auto; 
 	}
-}
+} */
 img { 
     image-rendering: optimizeSpeed;             /* STOP SMOOTHING, GIVE ME SPEED  */
     image-rendering: -moz-crisp-edges;          /* Firefox                        */
