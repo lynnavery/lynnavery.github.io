@@ -1,5 +1,10 @@
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+
 class CRTViewer {
     constructor() {
+        console.log('CRTViewer constructor called');
         // Mouse controls
         this.mouse = {
             isLocked: false,
@@ -15,20 +20,36 @@ class CRTViewer {
             lastTouchY: 0
         };
         
+        // HUD visibility
+        this.hudVisible = false;
+        
         // Camera settings
         this.cameraHeight = 1.7; // Average human height
         this.cameraSpeed = 0.1;
         this.collisionRadius = 0.5; // Radius for collision detection
         
         // Zoom settings
-        this.minFOV = 30;  // Maximum zoom in
-        this.maxFOV = 100; // Maximum zoom out
+        this.minFOV = 20;  // Maximum zoom in
+        this.maxFOV = 70; // Maximum zoom out
         this.zoomSpeed = 2; // How fast to zoom
         
         // Frame buffer for TV screen delay
+        this.frameDelay = 5; // Number of frames to delay (adjustable)
         this.frameBuffer = [];
-        this.frameDelay = 5; // Number of frames to delay (30 frames ≈ 0.5 seconds at 60fps)
         this.currentFrame = 0;
+        
+        // Create recursive feedback buffers
+        this.recursionLevels = 8; // Number of recursion levels
+        this.recursionBuffers = [];
+        for (let i = 0; i < this.recursionLevels; i++) {
+            this.recursionBuffers.push(new THREE.WebGLRenderTarget(512, 512, {
+                minFilter: THREE.LinearFilter,
+                magFilter: THREE.LinearFilter,
+                format: THREE.RGBFormat,
+                stencilBuffer: false,
+                depthBuffer: false
+            }));
+        }
         
         this.init();
     }
@@ -52,35 +73,80 @@ class CRTViewer {
         
         // Start animation loop
         this.animate();
+        console.log('Initialization complete');
     }
 
     setupMainScene() {
+        console.log('Setting up main scene...');
         // Create container with fixed aspect ratio
         const container = document.createElement('div');
         container.style.position = 'fixed';
         container.style.top = '50%';
         container.style.left = '50%';
         container.style.transform = 'translate(-50%, -50%)';
-        container.style.width = '100vh'; // Full viewport height
-        container.style.height = '75vh'; // 3/4 of viewport height for 4:3 ratio
+        container.style.width = '100vh';
+        container.style.height = '75vh';
         container.style.overflow = 'hidden';
         document.body.appendChild(container);
+        console.log('Container created and added to body');
 
         // Create scene
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0x000000);
+        console.log('Scene created');
 
-        // Create camera with 4:3 aspect ratio
-        this.mainCamera = new THREE.PerspectiveCamera(100, 4/3, 0.1, 1000); // 4:3 ratio
-        this.mainCamera.position.set(0, 0, 5);
-        this.mainCamera.lookAt(0, 0, 0);
+        // Add fog to the scene with PS2-style implementation
+        this.scene.fog = new THREE.Fog(0x000000, 2, 8); // Linear fog with near and far distances
+        this.scene.fog.color.setRGB(0.1, 0.1, 0.1); // Darker fog color for PS2 look
+        console.log('Fog added to scene');
+        
+        // Add fog to the scene
+        const fogMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                fogColor: { value: new THREE.Color(0x000000) },
+                fogNear: { value: 2 },
+                fogFar: { value: 8 }
+            },
+            vertexShader: `
+                varying vec3 vWorldPosition;
+                void main() {
+                    vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 fogColor;
+                uniform float fogNear;
+                uniform float fogFar;
+                varying vec3 vWorldPosition;
+                
+                void main() {
+                    float depth = length(vWorldPosition);
+                    float fogFactor = smoothstep(fogNear, fogFar, depth);
+                    gl_FragColor = vec4(fogColor, fogFactor);
+                }
+            `,
+            transparent: true,
+            depthWrite: false
+        });
+        
+        // Create a full-screen quad for the fog effect
+        const fogGeometry = new THREE.PlaneGeometry(2, 2);
+        const fogQuad = new THREE.Mesh(fogGeometry, fogMaterial);
+        fogQuad.position.z = -1;
+        this.scene.add(fogQuad);
 
         // Create renderer
         this.renderer = new THREE.WebGLRenderer({ 
-            canvas: document.getElementById('mainCanvas'),
             antialias: true 
         });
         this.renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(this.renderer.domElement);
+        
+        // Create camera with 4:3 aspect ratio and green tint
+        this.mainCamera = new THREE.PerspectiveCamera(75, 4/3, 0.1, 1000); // Adjusted FOV to 75
+        this.mainCamera.position.set(0, 1.7, 5); // Adjusted position to be higher and further back
+        this.mainCamera.lookAt(0, 1.7, 0); // Look at eye level
         
         // Create render targets for feedback effect
         this.renderTargets = [];
@@ -90,24 +156,208 @@ class CRTViewer {
             this.renderTargets.push(new THREE.WebGLRenderTarget(512, 512, {
                 minFilter: THREE.LinearFilter,
                 magFilter: THREE.LinearFilter,
-                format: THREE.RGBFormat
+                format: THREE.RGBFormat,
+                stencilBuffer: false,
+                depthBuffer: false
             }));
         }
+
+        // Use MeshBasicMaterial for the TV screen for maximum brightness
+        const screenMaterial = new THREE.MeshBasicMaterial({
+            map: this.renderTargets[0].texture,
+            color: 0xffffff,
+            transparent: false,
+            opacity: 1.0
+        });
         
+        // Create a green tint shader material
+        const greenTintShader = {
+            uniforms: {
+                tDiffuse: { value: null },
+                greenTint: { value: 0.005 },
+                brightness: { value: 1.0 },
+                contrast: { value: 1.0 },
+                gamma: { value: 2.2 },
+                recursionLevel: { value: 0 },
+                tvBrightness: { value: 1.0 },
+                tvContrast: { value: 1.0 },
+                tvGamma: { value: 2.2 }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform sampler2D tDiffuse;
+                uniform float greenTint;
+                uniform float brightness;
+                uniform float contrast;
+                uniform float gamma;
+                uniform float recursionLevel;
+                uniform float tvBrightness;
+                uniform float tvContrast;
+                uniform float tvGamma;
+                varying vec2 vUv;
+                void main() {
+                    vec4 color = texture2D(tDiffuse, vUv);
+                    if (recursionLevel > 0.0) {
+                        color.rgb = (color.rgb - 0.5) * tvContrast + 0.5;
+                        color.rgb *= tvBrightness;
+                    } else {
+                        color.rgb = (color.rgb - 0.5) * contrast + 0.5;
+                        color.rgb *= brightness;
+                    }
+                    if (greenTint > 0.0) {
+                        color.g += greenTint;
+                    }
+                    // Clamp before gamma
+                    color.rgb = clamp(color.rgb, 0.0, 1.0);
+                    // Gamma correction last
+                    float g = (recursionLevel > 0.0) ? tvGamma : gamma;
+                    color.rgb = pow(color.rgb, vec3(1.0 / g));
+                    gl_FragColor = color;
+                }
+            `
+        };
+
+        // Create post-process render target
+        this.postProcessTarget = new THREE.WebGLRenderTarget(
+            container.clientWidth,
+            container.clientHeight,
+            {
+                minFilter: THREE.LinearFilter,
+                magFilter: THREE.LinearFilter,
+                format: THREE.RGBFormat
+            }
+        );
+
+        // Create a full-screen quad for post-processing
+        const postProcessGeometry = new THREE.PlaneGeometry(2, 2);
+        this.postProcessMaterial = new THREE.ShaderMaterial({
+            uniforms: greenTintShader.uniforms,
+            vertexShader: greenTintShader.vertexShader,
+            fragmentShader: greenTintShader.fragmentShader
+        });
+        this.postProcessQuad = new THREE.Mesh(postProcessGeometry, this.postProcessMaterial);
+        this.postProcessScene = new THREE.Scene();
+        this.postProcessScene.add(this.postProcessQuad);
+        this.postProcessCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+        
+        // Create TV group
+        this.tv = new THREE.Group();
+        
+        // Create TV body (a box)
+        const tvBodyGeometry = new THREE.BoxGeometry(3, 2.5, 2);
+        const tvBodyMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x333333,
+            roughness: 0.7,
+            metalness: 0.3
+        });
+        const tvBody = new THREE.Mesh(tvBodyGeometry, tvBodyMaterial);
+        this.tv.add(tvBody);
+        
+        // Create TV screen with feedback texture - using 4:3 aspect ratio
+        const screenWidth = 2.5;
+        const screenHeight = screenWidth * (3/4); // Maintain 4:3 aspect ratio
+        const screenGeometry = new THREE.PlaneGeometry(screenWidth, screenHeight);
+        
+        this.screen = new THREE.Mesh(screenGeometry, screenMaterial);
+        this.screen.position.z = 1.01; // Slightly in front of the TV body
+        this.tv.add(this.screen);
+        
+        // Add TV to scene
+        this.tv.position.set(0, 1.7, 0);
+        this.scene.add(this.tv);
+        
+        console.log('TV created and added to scene');
+
+        // Add green tint to camera
+        const greenTint = new THREE.Color(0x00ff00);
+        greenTint.multiplyScalar(0.01); // Reduced from 0.02 to 0.01 (1% green tint)
+        this.scene.background = greenTint;
+
         // Add ambient light
         const ambientLight = new THREE.AmbientLight(0x404040);
+        ambientLight.intensity = 0.8; // Increased from default
         this.scene.add(ambientLight);
+        
+        // Add directional light from above
+        const overheadLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        overheadLight.position.set(0, 10, 0);
+        overheadLight.target.position.set(0, 0, 0);
+        overheadLight.castShadow = true;
+        overheadLight.shadow.mapSize.width = 1024;
+        overheadLight.shadow.mapSize.height = 1024;
+        overheadLight.shadow.camera.near = 1;
+        overheadLight.shadow.camera.far = 30;
+        overheadLight.shadow.camera.left = -10;
+        overheadLight.shadow.camera.right = 10;
+        overheadLight.shadow.camera.top = 10;
+        overheadLight.shadow.camera.bottom = -10;
+        this.scene.add(overheadLight);
+        this.scene.add(overheadLight.target);
         
         // Add directional light
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
         directionalLight.position.set(1, 1, 1);
         this.scene.add(directionalLight);
+
+        // Add secondary directional light for fill
+        const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
+        fillLight.position.set(-2, 1, -1);
+        this.scene.add(fillLight);
+
+        // Add rim light
+        const rimLight = new THREE.DirectionalLight(0xffffff, 0.3);
+        rimLight.position.set(0, 3, -5);
+        this.scene.add(rimLight);
         
-        // Add point light for TV glow
-        this.tvLight = new THREE.PointLight(0x88ff88, 2, 10); // Green glow
+        // Add point lights in corners of the room
+        const cornerLights = [
+            { pos: new THREE.Vector3(5, 3, 5), color: 0xffffee, intensity: 0.5 },
+            { pos: new THREE.Vector3(-5, 3, 5), color: 0xffffee, intensity: 0.5 },
+            { pos: new THREE.Vector3(5, 3, -5), color: 0xffffee, intensity: 0.5 },
+            { pos: new THREE.Vector3(-5, 3, -5), color: 0xffffee, intensity: 0.5 }
+        ];
+
+        cornerLights.forEach(light => {
+            const pointLight = new THREE.PointLight(light.color, light.intensity, 15);
+            pointLight.position.copy(light.pos);
+            pointLight.castShadow = true;
+            pointLight.shadow.mapSize.width = 512;
+            pointLight.shadow.mapSize.height = 512;
+            this.scene.add(pointLight);
+        });
+        
+        // Add point light for TV glow with increased intensity
+        this.tvLight = new THREE.PointLight(0xffffff, 2.0, 12); // Increased intensity and range
         this.tvLight.position.set(0, 0, 2);
+        this.tvLight.castShadow = true;
+        this.tvLight.shadow.mapSize.width = 1024;
+        this.tvLight.shadow.mapSize.height = 1024;
+        this.tvLight.shadow.camera.near = 0.5;
+        this.tvLight.shadow.camera.far = 20;
+        this.tvLight.shadow.bias = -0.0001;
         this.scene.add(this.tvLight);
-        
+
+        // Add a second, wider light for ambient TV glow with increased range
+        this.tvAmbientLight = new THREE.PointLight(0xffffff, 0.7, 20); // Increased intensity and range
+        this.tvAmbientLight.position.set(0, 0, 2);
+        this.tvAmbientLight.castShadow = true;
+        this.tvAmbientLight.shadow.mapSize.width = 512;
+        this.tvAmbientLight.shadow.mapSize.height = 512;
+        this.tvAmbientLight.shadow.camera.near = 0.5;
+        this.tvAmbientLight.shadow.camera.far = 20;
+        this.scene.add(this.tvAmbientLight);
+
+        // Add subtle floor bounce light
+        const floorBounceLight = new THREE.PointLight(0xffffff, 0.3, 8);
+        floorBounceLight.position.set(0, -1, 0);
+        this.scene.add(floorBounceLight);
+
         // Create environment
         this.createEnvironment();
         
@@ -116,9 +366,29 @@ class CRTViewer {
 
         // Store container reference
         this.container = container;
+
+        // Add instructions for controls
+        const instructions = document.createElement('div');
+        instructions.style.position = 'fixed';
+        instructions.style.top = '50%';
+        instructions.style.left = '50%';
+        instructions.style.transform = 'translate(-50%, -50%)';
+        instructions.style.color = 'white';
+        instructions.style.background = 'rgba(0, 0, 0, 0.7)';
+        instructions.style.padding = '20px';
+        instructions.style.borderRadius = '5px';
+        instructions.style.textAlign = 'center';
+        instructions.style.fontFamily = 'monospace';
+        instructions.style.display = 'none'; // Initially hidden
+        instructions.style.zIndex = '1000';
+        instructions.innerHTML = 'Click to use mouse controls<br>WASD to move, Mouse to look<br>Scroll to zoom<br>Press P to toggle HUD';
+        instructions.id = 'mouseInstructions';
+        document.body.appendChild(instructions);
+        this.instructions = instructions;
     }
     
     createEnvironment() {
+        console.log('Creating environment...');
         // Create a floor
         const floorGeometry = new THREE.PlaneGeometry(20, 20);
         const floorMaterial = new THREE.MeshStandardMaterial({ 
@@ -144,6 +414,7 @@ class CRTViewer {
     }
     
     addColorfulShapes() {
+        console.log('Adding colorful shapes...');
         // Create an array of bright colors
         const colors = [
             0xff0000, // Red
@@ -247,13 +518,12 @@ class CRTViewer {
         const screenHeight = screenWidth * (3/4); // Maintain 4:3 aspect ratio
         const screenGeometry = new THREE.PlaneGeometry(screenWidth, screenHeight);
         
-        // Use the first render target as the screen texture
+        // Use MeshBasicMaterial for the TV screen for maximum brightness
         const screenMaterial = new THREE.MeshBasicMaterial({
             map: this.renderTargets[0].texture,
-            emissive: 0x88ff88, // Green glow
-            emissiveIntensity: 0.9,
-            transparent: true,
-            opacity: 1
+            color: 0xffffff,
+            transparent: false,
+            opacity: 1.0
         });
         
         this.screen = new THREE.Mesh(screenGeometry, screenMaterial);
@@ -288,24 +558,6 @@ class CRTViewer {
         
         // Window resize
         window.addEventListener('resize', this.onWindowResize.bind(this));
-        
-        // Add instructions for controls
-        const instructions = document.createElement('div');
-        instructions.style.position = 'fixed';
-        instructions.style.top = '50%';
-        instructions.style.left = '50%';
-        instructions.style.transform = 'translate(-50%, -50%)';
-        instructions.style.color = 'white';
-        instructions.style.background = 'rgba(0, 0, 0, 0.7)';
-        instructions.style.padding = '20px';
-        instructions.style.borderRadius = '5px';
-        instructions.style.textAlign = 'center';
-        instructions.style.fontFamily = 'monospace';
-        instructions.style.display = this.mouse.isLocked ? 'none' : 'block';
-        instructions.style.zIndex = '1000';
-        instructions.innerHTML = 'Click to use mouse controls<br>WASD to move, Mouse to look<br>Scroll to zoom';
-        instructions.id = 'mouseInstructions';
-        document.body.appendChild(instructions);
     }
 
     setupTouchControls() {
@@ -448,6 +700,14 @@ class CRTViewer {
         if (this.keys.hasOwnProperty(event.key)) {
             this.keys[event.key] = true;
         }
+        
+        // Toggle HUD visibility with 'p' key
+        if (event.key.toLowerCase() === 'p') {
+            this.hudVisible = !this.hudVisible;
+            if (this.instructions) {
+                this.instructions.style.display = this.hudVisible ? 'block' : 'none';
+            }
+        }
     }
     
     onKeyUp(event) {
@@ -545,6 +805,13 @@ class CRTViewer {
             this.mainCamera.position.x = newPosition.x;
             this.mainCamera.position.z = newPosition.z;
             this.mainCamera.position.y = this.cameraHeight; // Lock to walking height
+        }
+        
+        // Update green overlay position to follow camera
+        if (this.greenOverlay) {
+            this.greenOverlay.position.copy(this.mainCamera.position);
+            this.greenOverlay.quaternion.copy(this.mainCamera.quaternion);
+            this.greenOverlay.translateZ(-0.5); // Position slightly in front of camera
         }
         
         // Animate shapes
@@ -654,81 +921,71 @@ class CRTViewer {
         // Update camera position based on controls
         this.updateCamera();
 
-        // Temporarily hide the screen to avoid infinite feedback loop issues
-        if (this.screen) {
-            this.screen.visible = false;
-        }
-        
         // Create recursive feedback effect
-        // First render the scene to the deepest render target
-        for (let i = this.renderTargets.length - 1; i >= 0; i--) {
-            // Render to current target
-            this.renderer.setRenderTarget(this.renderTargets[i]);
-            
-            // For the deepest level, render the scene normally
-            if (i === this.renderTargets.length - 1) {
+        for (let i = this.recursionLevels - 1; i >= 0; i--) {
+            // Render to current recursion buffer
+            this.renderer.setRenderTarget(this.recursionBuffers[i]);
+
+            if (i === this.recursionLevels - 1) {
+                // For the deepest level, render the scene normally
                 this.renderer.render(this.scene, this.mainCamera);
             } else {
-                // For other levels, show the screen with the next level's texture
+                // For other levels, use the next level's texture
                 if (this.screen && this.screen.material) {
-                    // Save the current texture
+                    // Save current state
                     const originalTexture = this.screen.material.map;
+                    const wasVisible = this.screen.visible;
                     
-                    // Set the texture to the next level's render target
-                    this.screen.material.map = this.renderTargets[i + 1].texture;
+                    // Update screen for this recursion level
+                    this.screen.material.map = this.recursionBuffers[i + 1].texture;
                     this.screen.visible = true;
                     
-                    // Render
+                    // Render the scene
                     this.renderer.render(this.scene, this.mainCamera);
                     
-                    // Reset to original texture
+                    // Restore original state
                     this.screen.material.map = originalTexture;
-                    this.screen.visible = false;
+                    this.screen.visible = wasVisible;
                 }
             }
-        }
-        
-        // Reset render target and show screen
-        this.renderer.setRenderTarget(null);
-        if (this.screen) {
-            this.screen.visible = true;
         }
 
-        // Render main scene
-        this.renderer.render(this.scene, this.mainCamera);
-        
-        // Handle frame delay
-        if (this.screen && this.screen.material) {
-            // Create a new render target for the current frame
-            const currentRenderTarget = new THREE.WebGLRenderTarget(
-                this.renderer.getSize(new THREE.Vector2()).x,
-                this.renderer.getSize(new THREE.Vector2()).y,
-                {
-                    minFilter: THREE.LinearFilter,
-                    magFilter: THREE.LinearFilter,
-                    format: THREE.RGBFormat
-                }
-            );
-            
-            // Render the current frame to the new render target
-            this.renderer.setRenderTarget(currentRenderTarget);
-            this.renderer.render(this.scene, this.mainCamera);
-            this.renderer.setRenderTarget(null);
-            
-            // Store the current frame
-            this.frameBuffer.push(currentRenderTarget.texture);
-            
-            // Keep buffer at desired length
-            if (this.frameBuffer.length > this.frameDelay) {
-                const oldTexture = this.frameBuffer.shift();
-                oldTexture.dispose(); // Clean up old texture
+        // Create a new render target for the current frame
+        const currentRenderTarget = new THREE.WebGLRenderTarget(
+            this.renderer.getSize(new THREE.Vector2()).x,
+            this.renderer.getSize(new THREE.Vector2()).y,
+            {
+                minFilter: THREE.LinearFilter,
+                magFilter: THREE.LinearFilter,
+                format: THREE.RGBFormat
             }
-            
+        );
+
+        // Render the current frame to the new render target
+        this.renderer.setRenderTarget(currentRenderTarget);
+        this.renderer.render(this.scene, this.mainCamera);
+        this.renderer.setRenderTarget(null);
+
+        // Store the current frame
+        this.frameBuffer.push(currentRenderTarget.texture);
+
+        // Keep buffer at desired length
+        if (this.frameBuffer.length > this.frameDelay) {
+            const oldTexture = this.frameBuffer.shift();
+            oldTexture.dispose(); // Clean up old texture
+        }
+
+        // Show screen and update its texture
+        if (this.screen) {
+            this.screen.visible = true;
             // Apply delayed texture if we have enough frames
             if (this.frameBuffer.length === this.frameDelay) {
                 this.screen.material.map = this.frameBuffer[0];
             }
         }
+
+        // Render main scene with the first recursion level
+        this.renderer.render(this.scene, this.mainCamera);
     }
 }
 

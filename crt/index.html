@@ -45,7 +45,15 @@
         <p>Q/E - Move up/down</p>
         <p>Arrow keys - Rotate view</p>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="script.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.162.0/build/three.module.js",
+            "three/examples/jsm/loaders/GLTFLoader.js": "https://unpkg.com/three@0.162.0/examples/jsm/loaders/GLTFLoader.js",
+            "three/examples/jsm/loaders/FBXLoader.js": "https://unpkg.com/three@0.162.0/examples/jsm/loaders/FBXLoader.js"
+        }
+    }
+    </script>
+    <script type="module" src="script.js"></script>
 </body>
 </html> 
