@@ -78,6 +78,12 @@ class CRTViewer {
 
     setupMainScene() {
         console.log('Setting up main scene...');
+        
+        // Create scene first
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0x000000);
+        console.log('Scene created');
+
         // Create container with fixed aspect ratio
         const container = document.createElement('div');
         container.style.position = 'fixed';
@@ -90,22 +96,29 @@ class CRTViewer {
         document.body.appendChild(container);
         console.log('Container created and added to body');
 
-        // Create scene
-        this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0x000000);
-        console.log('Scene created');
-
-        // Add fog to the scene with PS2-style implementation
-        this.scene.fog = new THREE.Fog(0x000000, 2, 8); // Linear fog with near and far distances
-        this.scene.fog.color.setRGB(0.1, 0.1, 0.1); // Darker fog color for PS2 look
+        // Now add fog after scene is created
+        this.scene.fog = new THREE.Fog(0x000000, 2, 20);
+        this.scene.fog.color.setRGB(0.1, 0.1, 0.1);
         console.log('Fog added to scene');
         
-        // Add fog to the scene
+        // Create renderer
+        this.renderer = new THREE.WebGLRenderer({ 
+            antialias: true 
+        });
+        this.renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(this.renderer.domElement);
+        
+        // Create camera with 4:3 aspect ratio
+        this.mainCamera = new THREE.PerspectiveCamera(75, 4/3, 0.1, 1000);
+        this.mainCamera.position.set(0, 1.7, 5);
+        this.mainCamera.lookAt(0, 1.7, 0);
+
+        // Add fog material
         const fogMaterial = new THREE.ShaderMaterial({
             uniforms: {
                 fogColor: { value: new THREE.Color(0x000000) },
                 fogNear: { value: 2 },
-                fogFar: { value: 8 }
+                fogFar: { value: 20 }
             },
             vertexShader: `
                 varying vec3 vWorldPosition;
@@ -129,28 +142,10 @@ class CRTViewer {
             transparent: true,
             depthWrite: false
         });
-        
-        // Create a full-screen quad for the fog effect
-        const fogGeometry = new THREE.PlaneGeometry(2, 2);
-        const fogQuad = new THREE.Mesh(fogGeometry, fogMaterial);
-        fogQuad.position.z = -1;
-        this.scene.add(fogQuad);
 
-        // Create renderer
-        this.renderer = new THREE.WebGLRenderer({ 
-            antialias: true 
-        });
-        this.renderer.setSize(container.clientWidth, container.clientHeight);
-        container.appendChild(this.renderer.domElement);
-        
-        // Create camera with 4:3 aspect ratio and green tint
-        this.mainCamera = new THREE.PerspectiveCamera(75, 4/3, 0.1, 1000); // Adjusted FOV to 75
-        this.mainCamera.position.set(0, 1.7, 5); // Adjusted position to be higher and further back
-        this.mainCamera.lookAt(0, 1.7, 0); // Look at eye level
-        
         // Create render targets for feedback effect
         this.renderTargets = [];
-        const numRenderTargets = 5; // Number of nested recursion levels
+        const numRenderTargets = 5;
         
         for (let i = 0; i < numRenderTargets; i++) {
             this.renderTargets.push(new THREE.WebGLRenderTarget(512, 512, {
@@ -162,126 +157,15 @@ class CRTViewer {
             }));
         }
 
-        // Use MeshBasicMaterial for the TV screen for maximum brightness
-        const screenMaterial = new THREE.MeshBasicMaterial({
-            map: this.renderTargets[0].texture,
-            color: 0xffffff,
-            transparent: false,
-            opacity: 1.0
-        });
-        
-        // Create a green tint shader material
-        const greenTintShader = {
-            uniforms: {
-                tDiffuse: { value: null },
-                greenTint: { value: 0.005 },
-                brightness: { value: 1.0 },
-                contrast: { value: 1.0 },
-                gamma: { value: 2.2 },
-                recursionLevel: { value: 0 },
-                tvBrightness: { value: 1.0 },
-                tvContrast: { value: 1.0 },
-                tvGamma: { value: 2.2 }
-            },
-            vertexShader: `
-                varying vec2 vUv;
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-            fragmentShader: `
-                uniform sampler2D tDiffuse;
-                uniform float greenTint;
-                uniform float brightness;
-                uniform float contrast;
-                uniform float gamma;
-                uniform float recursionLevel;
-                uniform float tvBrightness;
-                uniform float tvContrast;
-                uniform float tvGamma;
-                varying vec2 vUv;
-                void main() {
-                    vec4 color = texture2D(tDiffuse, vUv);
-                    if (recursionLevel > 0.0) {
-                        color.rgb = (color.rgb - 0.5) * tvContrast + 0.5;
-                        color.rgb *= tvBrightness;
-                    } else {
-                        color.rgb = (color.rgb - 0.5) * contrast + 0.5;
-                        color.rgb *= brightness;
-                    }
-                    if (greenTint > 0.0) {
-                        color.g += greenTint;
-                    }
-                    // Clamp before gamma
-                    color.rgb = clamp(color.rgb, 0.0, 1.0);
-                    // Gamma correction last
-                    float g = (recursionLevel > 0.0) ? tvGamma : gamma;
-                    color.rgb = pow(color.rgb, vec3(1.0 / g));
-                    gl_FragColor = color;
-                }
-            `
-        };
-
-        // Create post-process render target
-        this.postProcessTarget = new THREE.WebGLRenderTarget(
-            container.clientWidth,
-            container.clientHeight,
-            {
-                minFilter: THREE.LinearFilter,
-                magFilter: THREE.LinearFilter,
-                format: THREE.RGBFormat
-            }
-        );
-
-        // Create a full-screen quad for post-processing
-        const postProcessGeometry = new THREE.PlaneGeometry(2, 2);
-        this.postProcessMaterial = new THREE.ShaderMaterial({
-            uniforms: greenTintShader.uniforms,
-            vertexShader: greenTintShader.vertexShader,
-            fragmentShader: greenTintShader.fragmentShader
-        });
-        this.postProcessQuad = new THREE.Mesh(postProcessGeometry, this.postProcessMaterial);
-        this.postProcessScene = new THREE.Scene();
-        this.postProcessScene.add(this.postProcessQuad);
-        this.postProcessCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-        
-        // Create TV group
-        this.tv = new THREE.Group();
-        
-        // Create TV body (a box)
-        const tvBodyGeometry = new THREE.BoxGeometry(3, 2.5, 2);
-        const tvBodyMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x333333,
-            roughness: 0.7,
-            metalness: 0.3
-        });
-        const tvBody = new THREE.Mesh(tvBodyGeometry, tvBodyMaterial);
-        this.tv.add(tvBody);
-        
-        // Create TV screen with feedback texture - using 4:3 aspect ratio
-        const screenWidth = 2.5;
-        const screenHeight = screenWidth * (3/4); // Maintain 4:3 aspect ratio
-        const screenGeometry = new THREE.PlaneGeometry(screenWidth, screenHeight);
-        
-        this.screen = new THREE.Mesh(screenGeometry, screenMaterial);
-        this.screen.position.z = 1.01; // Slightly in front of the TV body
-        this.tv.add(this.screen);
-        
-        // Add TV to scene
-        this.tv.position.set(0, 1.7, 0);
-        this.scene.add(this.tv);
-        
-        console.log('TV created and added to scene');
-
-        // Add green tint to camera
-        const greenTint = new THREE.Color(0x00ff00);
-        greenTint.multiplyScalar(0.01); // Reduced from 0.02 to 0.01 (1% green tint)
-        this.scene.background = greenTint;
+        // Create a full-screen quad for the fog effect
+        const fogGeometry = new THREE.PlaneGeometry(2, 2);
+        const fogQuad = new THREE.Mesh(fogGeometry, fogMaterial);
+        fogQuad.position.z = -1;
+        this.scene.add(fogQuad);
 
         // Add ambient light
         const ambientLight = new THREE.AmbientLight(0x404040);
-        ambientLight.intensity = 0.8; // Increased from default
+        ambientLight.intensity = 0.8;
         this.scene.add(ambientLight);
         
         // Add directional light from above
@@ -299,75 +183,51 @@ class CRTViewer {
         overheadLight.shadow.camera.bottom = -10;
         this.scene.add(overheadLight);
         this.scene.add(overheadLight.target);
+
+        // Create TV group
+        this.tv = new THREE.Group();
         
-        // Add directional light
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(1, 1, 1);
-        this.scene.add(directionalLight);
+        // Create TV body
+        const tvBodyGeometry = new THREE.BoxGeometry(3, 2.5, 2);
+        const tvBodyMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x333333,
+            roughness: 0.7,
+            metalness: 0.3
+        });
+        const tvBody = new THREE.Mesh(tvBodyGeometry, tvBodyMaterial);
+        this.tv.add(tvBody);
 
-        // Add secondary directional light for fill
-        const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
-        fillLight.position.set(-2, 1, -1);
-        this.scene.add(fillLight);
-
-        // Add rim light
-        const rimLight = new THREE.DirectionalLight(0xffffff, 0.3);
-        rimLight.position.set(0, 3, -5);
-        this.scene.add(rimLight);
+        // Create TV screen
+        const screenWidth = 2.5;
+        const screenHeight = screenWidth * (3/4);
+        const screenGeometry = new THREE.PlaneGeometry(screenWidth, screenHeight);
         
-        // Add point lights in corners of the room
-        const cornerLights = [
-            { pos: new THREE.Vector3(5, 3, 5), color: 0xffffee, intensity: 0.5 },
-            { pos: new THREE.Vector3(-5, 3, 5), color: 0xffffee, intensity: 0.5 },
-            { pos: new THREE.Vector3(5, 3, -5), color: 0xffffee, intensity: 0.5 },
-            { pos: new THREE.Vector3(-5, 3, -5), color: 0xffffee, intensity: 0.5 }
-        ];
-
-        cornerLights.forEach(light => {
-            const pointLight = new THREE.PointLight(light.color, light.intensity, 15);
-            pointLight.position.copy(light.pos);
-            pointLight.castShadow = true;
-            pointLight.shadow.mapSize.width = 512;
-            pointLight.shadow.mapSize.height = 512;
-            this.scene.add(pointLight);
+        const screenMaterial = new THREE.MeshStandardMaterial({
+            map: this.renderTargets[0].texture,
+            color: 0xffffff,
+            emissive: 0x00ff00,
+            emissiveIntensity: 0.005,
+            transparent: false,
+            opacity: 1.0
         });
         
-        // Add point light for TV glow with increased intensity
-        this.tvLight = new THREE.PointLight(0xffffff, 2.0, 12); // Increased intensity and range
-        this.tvLight.position.set(0, 0, 2);
-        this.tvLight.castShadow = true;
-        this.tvLight.shadow.mapSize.width = 1024;
-        this.tvLight.shadow.mapSize.height = 1024;
-        this.tvLight.shadow.camera.near = 0.5;
-        this.tvLight.shadow.camera.far = 20;
-        this.tvLight.shadow.bias = -0.0001;
-        this.scene.add(this.tvLight);
+        this.screen = new THREE.Mesh(screenGeometry, screenMaterial);
+        this.screen.position.z = 1.01;
+        this.tv.add(this.screen);
 
-        // Add a second, wider light for ambient TV glow with increased range
-        this.tvAmbientLight = new THREE.PointLight(0xffffff, 0.7, 20); // Increased intensity and range
-        this.tvAmbientLight.position.set(0, 0, 2);
-        this.tvAmbientLight.castShadow = true;
-        this.tvAmbientLight.shadow.mapSize.width = 512;
-        this.tvAmbientLight.shadow.mapSize.height = 512;
-        this.tvAmbientLight.shadow.camera.near = 0.5;
-        this.tvAmbientLight.shadow.camera.far = 20;
-        this.scene.add(this.tvAmbientLight);
-
-        // Add subtle floor bounce light
-        const floorBounceLight = new THREE.PointLight(0xffffff, 0.3, 8);
-        floorBounceLight.position.set(0, -1, 0);
-        this.scene.add(floorBounceLight);
-
-        // Create environment
-        this.createEnvironment();
-        
-        // Create CRT TV
-        this.createCRTTV();
+        // Add TV to scene
+        this.tv.position.set(0, 1.7, 0);
+        this.scene.add(this.tv);
 
         // Store container reference
         this.container = container;
 
-        // Add instructions for controls
+        // Create the environment and setup
+        this.createEnvironment();
+        this.setupLighting();
+        this.setupGlowEffects();
+
+        // Add instructions
         const instructions = document.createElement('div');
         instructions.style.position = 'fixed';
         instructions.style.top = '50%';
@@ -379,16 +239,17 @@ class CRTViewer {
         instructions.style.borderRadius = '5px';
         instructions.style.textAlign = 'center';
         instructions.style.fontFamily = 'monospace';
-        instructions.style.display = 'none'; // Initially hidden
+        instructions.style.display = 'none';
         instructions.style.zIndex = '1000';
         instructions.innerHTML = 'Click to use mouse controls<br>WASD to move, Mouse to look<br>Scroll to zoom<br>Press P to toggle HUD';
         instructions.id = 'mouseInstructions';
         document.body.appendChild(instructions);
         this.instructions = instructions;
     }
-    
+
     createEnvironment() {
         console.log('Creating environment...');
+        
         // Create a floor
         const floorGeometry = new THREE.PlaneGeometry(20, 20);
         const floorMaterial = new THREE.MeshStandardMaterial({ 
@@ -401,140 +262,158 @@ class CRTViewer {
         floor.position.y = -2;
         this.scene.add(floor);
         
-        // Create some furniture or room elements
+        // Create walls
         const wallGeometry = new THREE.BoxGeometry(20, 10, 0.1);
         const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
+        
+        // Back wall
         const backWall = new THREE.Mesh(wallGeometry, wallMaterial);
         backWall.position.z = -5;
         backWall.position.y = 3;
         this.scene.add(backWall);
         
-        // Add colorful shapes
-        this.addColorfulShapes();
-    }
-    
-    addColorfulShapes() {
-        console.log('Adding colorful shapes...');
-        // Create an array of bright colors
-        const colors = [
-            0xff0000, // Red
-            0x00ff00, // Green
-            0x0000ff, // Blue
-            0xffff00, // Yellow
-            0xff00ff, // Magenta
-            0x00ffff, // Cyan
-            0xff8800, // Orange
-            0x8800ff  // Purple
-        ];
+        // Side walls
+        const leftWall = new THREE.Mesh(wallGeometry, wallMaterial);
+        leftWall.rotation.y = Math.PI / 2;
+        leftWall.position.x = -10;
+        leftWall.position.y = 3;
+        this.scene.add(leftWall);
         
-        // Add floating cubes
-        for (let i = 0; i < 10; i++) {
-            const size = Math.random() * 0.5 + 0.3;
-            const geometry = new THREE.BoxGeometry(size, size, size);
-            const material = new THREE.MeshStandardMaterial({
-                color: colors[Math.floor(Math.random() * colors.length)],
-                emissive: colors[Math.floor(Math.random() * colors.length)],
-                emissiveIntensity: 0.2,
-                metalness: 0.8,
-                roughness: 0.2
-            });
-            
-            const cube = new THREE.Mesh(geometry, material);
-            cube.position.set(
-                (Math.random() - 0.5) * 10,
-                Math.random() * 4,
-                (Math.random() - 0.5) * 10
-            );
-            
-            // Store initial position for animation
-            cube.userData.initialY = cube.position.y;
-            cube.userData.speed = Math.random() * 0.01 + 0.005;
-            cube.userData.rotationSpeed = {
-                x: Math.random() * 0.02 - 0.01,
-                y: Math.random() * 0.02 - 0.01,
-                z: Math.random() * 0.02 - 0.01
-            };
-            
-            this.scene.add(cube);
-        }
-        
-        // Add some spheres
-        for (let i = 0; i < 5; i++) {
-            const radius = Math.random() * 0.5 + 0.3;
-            const geometry = new THREE.SphereGeometry(radius, 16, 16);
-            const material = new THREE.MeshStandardMaterial({
-                color: colors[Math.floor(Math.random() * colors.length)],
-                emissive: colors[Math.floor(Math.random() * colors.length)],
-                emissiveIntensity: 0.2,
-                metalness: 0.5,
-                roughness: 0.3
-            });
-            
-            const sphere = new THREE.Mesh(geometry, material);
-            sphere.position.set(
-                (Math.random() - 0.5) * 10,
-                Math.random() * 4,
-                (Math.random() - 0.5) * 10
-            );
-            
-            // Store initial position for animation
-            sphere.userData.initialY = sphere.position.y;
-            sphere.userData.speed = Math.random() * 0.01 + 0.005;
-            
-            this.scene.add(sphere);
-        }
-        
-        // Add a torus knot
-        const torusGeometry = new THREE.TorusKnotGeometry(0.8, 0.3, 64, 16);
-        const torusMaterial = new THREE.MeshStandardMaterial({
-            color: 0xff00ff,
-            emissive: 0x880088,
-            metalness: 0.7,
-            roughness: 0.2
-        });
-        this.torusKnot = new THREE.Mesh(torusGeometry, torusMaterial);
-        this.torusKnot.position.set(-3, 1, -2);
-        this.scene.add(this.torusKnot);
-    }
+        const rightWall = new THREE.Mesh(wallGeometry, wallMaterial);
+        rightWall.rotation.y = Math.PI / 2;
+        rightWall.position.x = 10;
+        rightWall.position.y = 3;
+        this.scene.add(rightWall);
 
-    createCRTTV() {
-        console.log('Creating CRT TV...');
-        
-        // Create TV group
-        this.tv = new THREE.Group();
-        
-        // Create TV body (a box)
+        // Create TV
         const tvBodyGeometry = new THREE.BoxGeometry(3, 2.5, 2);
         const tvBodyMaterial = new THREE.MeshStandardMaterial({ 
             color: 0x333333,
             roughness: 0.7,
             metalness: 0.3
         });
+        
+        this.tv = new THREE.Group();
         const tvBody = new THREE.Mesh(tvBodyGeometry, tvBodyMaterial);
         this.tv.add(tvBody);
-        
-        // Create TV screen with feedback texture - using 4:3 aspect ratio
+
+        // Create TV screen
         const screenWidth = 2.5;
-        const screenHeight = screenWidth * (3/4); // Maintain 4:3 aspect ratio
+        const screenHeight = screenWidth * (3/4);
         const screenGeometry = new THREE.PlaneGeometry(screenWidth, screenHeight);
         
-        // Use MeshBasicMaterial for the TV screen for maximum brightness
-        const screenMaterial = new THREE.MeshBasicMaterial({
+        const screenMaterial = new THREE.MeshStandardMaterial({
             map: this.renderTargets[0].texture,
             color: 0xffffff,
+            emissive: 0x00ff00,
+            emissiveIntensity: 0.005,
             transparent: false,
             opacity: 1.0
         });
         
         this.screen = new THREE.Mesh(screenGeometry, screenMaterial);
-        this.screen.position.z = 1.01; // Slightly in front of the TV body
+        this.screen.position.z = 1.01;
         this.tv.add(this.screen);
-        
-        // Add TV to scene
+
+        // Position and add TV to scene
         this.tv.position.set(0, 1.7, 0);
         this.scene.add(this.tv);
+    }
+
+    setupLighting() {
+        // Add point light for TV glow
+        this.tvLight = new THREE.PointLight(0x00ff00, 1.5, 15);
+        this.tvLight.position.set(0, 1.7, 2);
+        this.tvLight.castShadow = true;
+        this.tvLight.shadow.mapSize.width = 1024;
+        this.tvLight.shadow.mapSize.height = 1024;
+        this.tvLight.shadow.camera.near = 0.5;
+        this.tvLight.shadow.camera.far = 20;
+        this.tvLight.shadow.bias = -0.0001;
+        this.scene.add(this.tvLight);
+
+        // Add wider ambient TV glow
+        this.tvAmbientLight = new THREE.PointLight(0x88ff88, 0.4, 25);
+        this.tvAmbientLight.position.set(0, 1.7, 1);
+        this.tvAmbientLight.castShadow = true;
+        this.tvAmbientLight.shadow.mapSize.width = 512;
+        this.tvAmbientLight.shadow.mapSize.height = 512;
+        this.tvAmbientLight.shadow.camera.near = 0.5;
+        this.tvAmbientLight.shadow.camera.far = 20;
+        this.scene.add(this.tvAmbientLight);
+
+        // Add volumetric glow effects
+        this.setupGlowEffects();
+    }
+
+    setupGlowEffects() {
+        // Add volumetric green glow effect
+        const glowGeometry = new THREE.PlaneGeometry(4, 3.5);
+        const glowMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                time: { value: 0 }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform float time;
+                varying vec2 vUv;
+                void main() {
+                    vec2 center = vec2(0.5);
+                    float dist = length(vUv - center);
+                    float alpha = smoothstep(0.9, 0.1, dist) * 0.15;
+                    float pulse = sin(time * 1.5) * 0.05 + 0.95;
+                    float noise = fract(sin(dot(vUv, vec2(12.9898, 78.233))) * 43758.5453);
+                    alpha *= (0.95 + noise * 0.05);
+                    gl_FragColor = vec4(0.0, 1.0, 0.0, alpha * pulse);
+                }
+            `,
+            transparent: true,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+            side: THREE.BackSide
+        });
         
-        console.log('TV created and added to scene');
+        const glowPlane = new THREE.Mesh(glowGeometry, glowMaterial);
+        glowPlane.position.z = 0.99;
+        this.tv.add(glowPlane);
+        this.glowMaterial = glowMaterial;
+
+        // Add wider glow effect
+        const wideGlowGeometry = new THREE.PlaneGeometry(6, 4.5);
+        const wideGlowMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                time: { value: 0 }
+            },
+            vertexShader: glowMaterial.vertexShader,
+            fragmentShader: `
+                uniform float time;
+                varying vec2 vUv;
+                void main() {
+                    vec2 center = vec2(0.5);
+                    float dist = length(vUv - center);
+                    float alpha = smoothstep(1.0, 0.2, dist) * 0.08;
+                    float pulse = sin(time * 1.2) * 0.03 + 0.97;
+                    float noise = fract(sin(dot(vUv, vec2(12.9898, 78.233))) * 43758.5453);
+                    alpha *= (0.97 + noise * 0.03);
+                    gl_FragColor = vec4(0.0, 1.0, 0.0, alpha * pulse);
+                }
+            `,
+            transparent: true,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+            side: THREE.BackSide
+        });
+
+        const wideGlowPlane = new THREE.Mesh(wideGlowGeometry, wideGlowMaterial);
+        wideGlowPlane.position.z = 0.98;
+        this.tv.add(wideGlowPlane);
+        this.wideGlowMaterial = wideGlowMaterial;
     }
 
     setupControls() {
@@ -917,6 +796,15 @@ class CRTViewer {
 
     animate() {
         requestAnimationFrame(this.animate.bind(this));
+
+        // Update glow effects
+        const time = performance.now() * 0.001;
+        if (this.glowMaterial) {
+            this.glowMaterial.uniforms.time.value = time;
+        }
+        if (this.wideGlowMaterial) {
+            this.wideGlowMaterial.uniforms.time.value = time;
+        }
 
         // Update camera position based on controls
         this.updateCamera();
