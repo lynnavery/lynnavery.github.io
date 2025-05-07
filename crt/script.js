@@ -3,7 +3,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 
 class CRTViewer {
-    constructor() {
+    constructor(containerElement) {
+        if (!containerElement) {
+            throw new Error('Container element must be provided to CRTViewer');
+        }
         console.log('CRTViewer constructor called');
         // Mouse controls
         this.mouse = {
@@ -11,12 +14,15 @@ class CRTViewer {
             sensitivity: 0.002
         };
         
+        // Store the container element
+        this.containerElement = containerElement;
+        
         // Camera shake settings
         this.cameraShake = {
             enabled: true,
             intensity: 0.01,
             rotationIntensity: 0.000005,
-            fovIntensity: 0.5, // FOV will change by up to 0.15 degrees
+            fovIntensity: 0.5,
             decay: 0.65,
             currentShake: { x: 0, y: 0, z: 0 },
             currentRotation: { x: 0, y: 0, z: 0 },
@@ -96,17 +102,14 @@ class CRTViewer {
         this.scene.background = new THREE.Color(0x000000);
         console.log('Scene created');
 
-        // Create container with fixed aspect ratio
-        const container = document.createElement('div');
-        container.style.position = 'fixed';
-        container.style.top = '50%';
-        container.style.left = '50%';
-        container.style.transform = 'translate(-50%, -50%)';
-        container.style.width = '100vh';
-        container.style.height = '75vh';
+        // Use the provided container
+        const container = this.containerElement;
+        container.style.position = 'relative';  // Changed from fixed to relative
+        container.style.width = '100%';         // Use full width of parent
+        container.style.height = '100%';        // Use full height of parent
+        container.style.aspectRatio = '4/3';    // Maintain 4:3 aspect ratio
         container.style.overflow = 'hidden';
-        document.body.appendChild(container);
-        console.log('Container created and added to body');
+        console.log('Container configured');
 
         // Now add fog after scene is created
         this.scene.fog = new THREE.Fog(0x000000, 2, 20);
@@ -283,7 +286,7 @@ class CRTViewer {
 
         // Add instructions
         const instructions = document.createElement('div');
-        instructions.style.position = 'fixed';
+        instructions.style.position = 'absolute';  // Changed from fixed to absolute
         instructions.style.top = '50%';
         instructions.style.left = '50%';
         instructions.style.transform = 'translate(-50%, -50%)';
@@ -297,7 +300,7 @@ class CRTViewer {
         instructions.style.zIndex = '1000';
         instructions.innerHTML = 'Click to use mouse controls<br>WASD to move, Mouse to look<br>Scroll to zoom<br>Press P to toggle HUD';
         instructions.id = 'mouseInstructions';
-        document.body.appendChild(instructions);
+        container.appendChild(instructions);
         this.instructions = instructions;
     }
 
@@ -433,7 +436,7 @@ class CRTViewer {
     setupTouchControls() {
         // Create joystick container
         const joystickContainer = document.createElement('div');
-        joystickContainer.style.position = 'fixed';
+        joystickContainer.style.position = 'absolute';  // Changed from fixed to absolute
         joystickContainer.style.bottom = '30px';
         joystickContainer.style.left = '30px';
         joystickContainer.style.width = '150px';
@@ -442,7 +445,7 @@ class CRTViewer {
         joystickContainer.style.borderRadius = '50%';
         joystickContainer.style.touchAction = 'none';
         joystickContainer.style.zIndex = '1000';
-        document.body.appendChild(joystickContainer);
+        this.containerElement.appendChild(joystickContainer);  // Append to container instead of body
 
         // Create joystick handle
         const joystickHandle = document.createElement('div');
@@ -458,7 +461,7 @@ class CRTViewer {
 
         // Create look controls container
         const lookControls = document.createElement('div');
-        lookControls.style.position = 'fixed';
+        lookControls.style.position = 'absolute';  // Changed from fixed to absolute
         lookControls.style.bottom = '30px';
         lookControls.style.right = '30px';
         lookControls.style.width = '200px';
@@ -467,7 +470,7 @@ class CRTViewer {
         lookControls.style.borderRadius = '50%';
         lookControls.style.touchAction = 'none';
         lookControls.style.zIndex = '1000';
-        document.body.appendChild(lookControls);
+        this.containerElement.appendChild(lookControls);  // Append to container instead of body
 
         // Store references
         this.touch.joystick = {
@@ -631,12 +634,12 @@ class CRTViewer {
     }
     
     onWindowResize() {
-        // Update container size
-        this.container.style.width = '100vh';
-        this.container.style.height = '75vh';
-
+        // Update container size while maintaining aspect ratio
+        const containerWidth = this.containerElement.clientWidth;
+        const containerHeight = containerWidth * (3/4);  // Maintain 4:3 aspect ratio
+        
         // Update renderer size
-        this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+        this.renderer.setSize(containerWidth, containerHeight);
         
         // Update camera aspect ratio (maintain 4:3)
         this.mainCamera.aspect = 4/3;
@@ -913,4 +916,4 @@ class CRTViewer {
 }
 
 // Initialize the viewer
-new CRTViewer(); 
+export { CRTViewer }; 

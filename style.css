@@ -181,3 +181,8 @@ img {
     -ms-interpolation-mode: nearest-neighbor;   /* IE8+                           */
 	mix-blend-mode: multiply;
 }
+#crt-container {
+	width: 800px;  /* Set your desired width */
+	margin: 20px auto;
+	/* The height will be automatically set by the aspect ratio */
+}

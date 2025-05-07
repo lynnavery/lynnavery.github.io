@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CRT Viewer Example</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header, .footer {
+            padding: 20px;
+            background: #f0f0f0;
+            margin-bottom: 20px;
+        }
+        
+        #crt-container {
+            width: 800px;  /* Set your desired width */
+            margin: 20px auto;
+            /* The height will be automatically set by the aspect ratio */
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="header">
+            <h1>Example Page with CRT Viewer</h1>
+            <p>This is some content above the CRT viewer.</p>
+        </div>
+        <script type="importmap">
+            {
+                "imports": {
+                    "three": "https://unpkg.com/three@0.162.0/build/three.module.js",
+                    "three/examples/jsm/loaders/GLTFLoader.js": "https://unpkg.com/three@0.162.0/examples/jsm/loaders/GLTFLoader.js",
+                    "three/examples/jsm/loaders/FBXLoader.js": "https://unpkg.com/three@0.162.0/examples/jsm/loaders/FBXLoader.js"
+                }
+            }
+            </script>
+
+        <!-- This is the container div where the CRT viewer will be initialized -->
+        <div id="crt-container"></div>
+
+
+        <div class="footer">
+            <p>This is some content below the CRT viewer.</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { CRTViewer } from './script.js';
+        
+        // Initialize the CRT viewer with the container element
+        const container = document.getElementById('crt-container');
+        const viewer = new CRTViewer(container);
+    </script>
+</body>
+</html> 
