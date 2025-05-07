@@ -48,6 +48,10 @@
         }
     }
     </script>
-    <script type="module" src="script.js"></script>
+    <script type="module">
+        // Add timestamp to force reload
+        const timestamp = new Date().getTime();
+        import(`script.js?v=${timestamp}`);
+    </script>
 </body>
 </html> 
