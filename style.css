@@ -182,7 +182,9 @@ img {
 	mix-blend-mode: multiply;
 }
 #crt-container {
-	width: 800px;  /* Set your desired width */
+	width: 100%;  /* Set your desired width */
+	aspect-ratio: 4/3; /* Ensure height is set based on width */
+	overflow: hidden; /* Consistent with script */
 	margin: 20px auto;
 	/* The height will be automatically set by the aspect ratio */
 }
