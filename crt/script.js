@@ -11,6 +11,18 @@ class CRTViewer {
             sensitivity: 0.002
         };
         
+        // Camera shake settings
+        this.cameraShake = {
+            enabled: true,
+            intensity: 0.01,
+            rotationIntensity: 0.000005,
+            fovIntensity: 0.5, // FOV will change by up to 0.15 degrees
+            decay: 0.65,
+            currentShake: { x: 0, y: 0, z: 0 },
+            currentRotation: { x: 0, y: 0, z: 0 },
+            currentFOV: 0
+        };
+        
         // Touch controls
         this.touch = {
             joystick: null,
@@ -30,7 +42,7 @@ class CRTViewer {
         
         // Zoom settings
         this.minFOV = 20;  // Maximum zoom in
-        this.maxFOV = 70; // Maximum zoom out
+        this.maxFOV = 30; // Maximum zoom out
         this.zoomSpeed = 2; // How fast to zoom
         
         // Frame buffer for TV screen delay
@@ -109,7 +121,7 @@ class CRTViewer {
         container.appendChild(this.renderer.domElement);
         
         // Create camera with 4:3 aspect ratio
-        this.mainCamera = new THREE.PerspectiveCamera(75, 4/3, 0.1, 1000);
+        this.mainCamera = new THREE.PerspectiveCamera(this.minFOV, 4/3, 0.1, 1000);
         this.mainCamera.position.set(0, 1.7, 5);
         this.mainCamera.lookAt(0, 1.7, 0);
 
@@ -188,13 +200,43 @@ class CRTViewer {
         this.tv = new THREE.Group();
         
         // Create TV body
-        const tvBodyGeometry = new THREE.BoxGeometry(3, 2.5, 2);
+        const width = 3;
+        const height = 2.5;
+        const depth = 1.8;
+        const radius = 0.1; // Corner radius
+
+        // Create rounded rectangle shape
+        const shape = new THREE.Shape();
+        
+        // Start from top-right and go counter-clockwise
+        shape.moveTo(width/2 - radius, height/2);
+        shape.lineTo(-width/2 + radius, height/2);
+        shape.quadraticCurveTo(-width/2, height/2, -width/2, height/2 - radius);
+        shape.lineTo(-width/2, -height/2 + radius);
+        shape.quadraticCurveTo(-width/2, -height/2, -width/2 + radius, -height/2);
+        shape.lineTo(width/2 - radius, -height/2);
+        shape.quadraticCurveTo(width/2, -height/2, width/2, -height/2 + radius);
+        shape.lineTo(width/2, height/2 - radius);
+        shape.quadraticCurveTo(width/2, height/2, width/2 - radius, height/2);
+
+        const extrudeSettings = {
+            depth: depth,
+            bevelEnabled: true,
+            bevelSegments: 3,
+            bevelSize: radius,
+            bevelThickness: radius/2
+        };
+
+        const tvBodyGeometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
         const tvBodyMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x333333,
-            roughness: 0.7,
-            metalness: 0.3
+            color: 0xffffff,
+            roughness: 0.0,
+            metalness: 0.4
         });
+        
         const tvBody = new THREE.Mesh(tvBodyGeometry, tvBodyMaterial);
+        // Center the geometry
+        tvBody.position.z = -depth/2;
         this.tv.add(tvBody);
 
         // Create TV screen
@@ -205,8 +247,6 @@ class CRTViewer {
         const screenMaterial = new THREE.MeshStandardMaterial({
             map: this.renderTargets[0].texture,
             color: 0xffffff,
-            emissive: 0x00ff00,
-            emissiveIntensity: 0.005,
             transparent: false,
             opacity: 1.0
         });
@@ -214,6 +254,20 @@ class CRTViewer {
         this.screen = new THREE.Mesh(screenGeometry, screenMaterial);
         this.screen.position.z = 1.01;
         this.tv.add(this.screen);
+
+        // Add cats image overlay
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load('cats.png', (texture) => {
+            const overlayGeometry = new THREE.PlaneGeometry(screenWidth * 0.8, screenHeight * 0.8); // Slightly smaller than the screen
+            const overlayMaterial = new THREE.MeshBasicMaterial({
+                map: texture,
+                transparent: true,
+                opacity: 0.8
+            });
+            const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial);
+            overlay.position.z = 1.02; // Slightly in front of the screen
+            this.tv.add(overlay);
+        });
 
         // Add TV to scene
         this.tv.position.set(0, 1.7, 0);
@@ -253,9 +307,9 @@ class CRTViewer {
         // Create a floor
         const floorGeometry = new THREE.PlaneGeometry(20, 20);
         const floorMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x333333,
+            color: 0x222222,
             roughness: 0.8,
-            metalness: 0.2
+            metalness: 0.8
         });
         const floor = new THREE.Mesh(floorGeometry, floorMaterial);
         floor.rotation.x = -Math.PI / 2;
@@ -271,6 +325,10 @@ class CRTViewer {
         backWall.position.z = -5;
         backWall.position.y = 3;
         this.scene.add(backWall);
+        const frontWall = new THREE.Mesh(wallGeometry, wallMaterial);
+        frontWall.position.z = 10;
+        frontWall.position.y = 3;
+        this.scene.add(frontWall);
         
         // Side walls
         const leftWall = new THREE.Mesh(wallGeometry, wallMaterial);
@@ -288,9 +346,9 @@ class CRTViewer {
         // Create TV
         const tvBodyGeometry = new THREE.BoxGeometry(3, 2.5, 2);
         const tvBodyMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x333333,
-            roughness: 0.7,
-            metalness: 0.3
+            color: 0xffffff,
+            roughness: 0.0,
+            metalness: 0.4
         });
         
         this.tv = new THREE.Group();
@@ -305,8 +363,6 @@ class CRTViewer {
         const screenMaterial = new THREE.MeshStandardMaterial({
             map: this.renderTargets[0].texture,
             color: 0xffffff,
-            emissive: 0x00ff00,
-            emissiveIntensity: 0.005,
             transparent: false,
             opacity: 1.0
         });
@@ -322,7 +378,7 @@ class CRTViewer {
 
     setupLighting() {
         // Add point light for TV glow
-        this.tvLight = new THREE.PointLight(0x00ff00, 1.5, 15);
+        this.tvLight = new THREE.PointLight(0xffffff, 1.5, 15);
         this.tvLight.position.set(0, 1.7, 2);
         this.tvLight.castShadow = true;
         this.tvLight.shadow.mapSize.width = 1024;
@@ -333,7 +389,7 @@ class CRTViewer {
         this.scene.add(this.tvLight);
 
         // Add wider ambient TV glow
-        this.tvAmbientLight = new THREE.PointLight(0x88ff88, 0.4, 25);
+        this.tvAmbientLight = new THREE.PointLight(0xffffff, 0.2, 25);
         this.tvAmbientLight.position.set(0, 1.7, 1);
         this.tvAmbientLight.castShadow = true;
         this.tvAmbientLight.shadow.mapSize.width = 512;
@@ -347,73 +403,8 @@ class CRTViewer {
     }
 
     setupGlowEffects() {
-        // Add volumetric green glow effect
-        const glowGeometry = new THREE.PlaneGeometry(4, 3.5);
-        const glowMaterial = new THREE.ShaderMaterial({
-            uniforms: {
-                time: { value: 0 }
-            },
-            vertexShader: `
-                varying vec2 vUv;
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-            fragmentShader: `
-                uniform float time;
-                varying vec2 vUv;
-                void main() {
-                    vec2 center = vec2(0.5);
-                    float dist = length(vUv - center);
-                    float alpha = smoothstep(0.9, 0.1, dist) * 0.15;
-                    float pulse = sin(time * 1.5) * 0.05 + 0.95;
-                    float noise = fract(sin(dot(vUv, vec2(12.9898, 78.233))) * 43758.5453);
-                    alpha *= (0.95 + noise * 0.05);
-                    gl_FragColor = vec4(0.0, 1.0, 0.0, alpha * pulse);
-                }
-            `,
-            transparent: true,
-            depthWrite: false,
-            blending: THREE.AdditiveBlending,
-            side: THREE.BackSide
-        });
-        
-        const glowPlane = new THREE.Mesh(glowGeometry, glowMaterial);
-        glowPlane.position.z = 0.99;
-        this.tv.add(glowPlane);
-        this.glowMaterial = glowMaterial;
-
-        // Add wider glow effect
-        const wideGlowGeometry = new THREE.PlaneGeometry(6, 4.5);
-        const wideGlowMaterial = new THREE.ShaderMaterial({
-            uniforms: {
-                time: { value: 0 }
-            },
-            vertexShader: glowMaterial.vertexShader,
-            fragmentShader: `
-                uniform float time;
-                varying vec2 vUv;
-                void main() {
-                    vec2 center = vec2(0.5);
-                    float dist = length(vUv - center);
-                    float alpha = smoothstep(1.0, 0.2, dist) * 0.08;
-                    float pulse = sin(time * 1.2) * 0.03 + 0.97;
-                    float noise = fract(sin(dot(vUv, vec2(12.9898, 78.233))) * 43758.5453);
-                    alpha *= (0.97 + noise * 0.03);
-                    gl_FragColor = vec4(0.0, 1.0, 0.0, alpha * pulse);
-                }
-            `,
-            transparent: true,
-            depthWrite: false,
-            blending: THREE.AdditiveBlending,
-            side: THREE.BackSide
-        });
-
-        const wideGlowPlane = new THREE.Mesh(wideGlowGeometry, wideGlowMaterial);
-        wideGlowPlane.position.z = 0.98;
-        this.tv.add(wideGlowPlane);
-        this.wideGlowMaterial = wideGlowMaterial;
+        // This method is now empty as we've removed the glow effects
+        console.log('Glow effects disabled');
     }
 
     setupControls() {
@@ -587,6 +578,12 @@ class CRTViewer {
                 this.instructions.style.display = this.hudVisible ? 'block' : 'none';
             }
         }
+
+        // Toggle camera shake with 'k' key
+        if (event.key.toLowerCase() === 'k') {
+            this.cameraShake.enabled = !this.cameraShake.enabled;
+            console.log('Camera shake:', this.cameraShake.enabled ? 'enabled' : 'disabled');
+        }
     }
     
     onKeyUp(event) {
@@ -685,16 +682,63 @@ class CRTViewer {
             this.mainCamera.position.z = newPosition.z;
             this.mainCamera.position.y = this.cameraHeight; // Lock to walking height
         }
-        
-        // Update green overlay position to follow camera
-        if (this.greenOverlay) {
-            this.greenOverlay.position.copy(this.mainCamera.position);
-            this.greenOverlay.quaternion.copy(this.mainCamera.quaternion);
-            this.greenOverlay.translateZ(-0.5); // Position slightly in front of camera
+
+        // Apply camera shake
+        if (this.cameraShake.enabled) {
+            this.applyCameraShake();
         }
         
         // Animate shapes
         this.animateShapes();
+    }
+
+    applyCameraShake() {
+        // Generate new random shake values
+        const shake = this.cameraShake;
+        
+        // Position shake
+        shake.currentShake.x = (Math.random() - 0.5) * shake.intensity;
+        shake.currentShake.y = (Math.random() - 0.5) * shake.intensity;
+        shake.currentShake.z = (Math.random() - 0.5) * shake.intensity;
+        
+        // Rotation shake
+        shake.currentRotation.x = (Math.random() - 0.5) * shake.rotationIntensity;
+        shake.currentRotation.y = (Math.random() - 0.5) * shake.rotationIntensity;
+        shake.currentRotation.z = (Math.random() - 0.5) * shake.rotationIntensity;
+
+        // FOV shake
+        shake.currentFOV = (Math.random() - 0.5) * shake.fovIntensity;
+        
+        // Apply position shake
+        this.mainCamera.position.x += shake.currentShake.x;
+        this.mainCamera.position.y += shake.currentShake.y;
+        this.mainCamera.position.z += shake.currentShake.z;
+        
+        // Apply rotation shake
+        this.mainCamera.rotation.x += shake.currentRotation.x;
+        this.mainCamera.rotation.y += shake.currentRotation.y;
+        this.mainCamera.rotation.z += shake.currentRotation.z;
+
+        // Apply FOV shake
+        const newFOV = this.mainCamera.fov + shake.currentFOV;
+        this.mainCamera.fov = Math.max(this.minFOV - 0.2, Math.min(this.maxFOV + 0.2, newFOV));
+        this.mainCamera.updateProjectionMatrix(); // Required after FOV change
+        
+        // Apply decay to make it more natural
+        shake.intensity *= shake.decay;
+        shake.rotationIntensity *= shake.decay;
+        shake.fovIntensity *= shake.decay;
+        
+        // Reset intensity if it gets too small
+        if (shake.intensity < 0.0005) {
+            shake.intensity = 0.001;
+        }
+        if (shake.rotationIntensity < 0.00002) {
+            shake.rotationIntensity = 0.00005;
+        }
+        if (shake.fovIntensity < 0.05) {
+            shake.fovIntensity = 0.15;
+        }
     }
 
     checkCollisions(newPosition) {
@@ -796,15 +840,6 @@ class CRTViewer {
 
     animate() {
         requestAnimationFrame(this.animate.bind(this));
-
-        // Update glow effects
-        const time = performance.now() * 0.001;
-        if (this.glowMaterial) {
-            this.glowMaterial.uniforms.time.value = time;
-        }
-        if (this.wideGlowMaterial) {
-            this.wideGlowMaterial.uniforms.time.value = time;
-        }
 
         // Update camera position based on controls
         this.updateCamera();
