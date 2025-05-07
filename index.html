@@ -93,10 +93,10 @@
 
 <script type="module">
     import { CRTViewer } from './crt/script.js';
-    
-    // Initialize the CRT viewer with the container element
-    const container = document.getElementById('crt-container');
-    const viewer = new CRTViewer(container);
+    window.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('crt-container');
+        const viewer = new CRTViewer(container);
+    });
 </script>
 
 </body>
