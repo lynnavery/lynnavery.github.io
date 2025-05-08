@@ -33,7 +33,7 @@
 </div>
 
 <script type="module">
-    import { CRTViewer } from './crt/script.js';
+    import { CRTViewer } from './crt/script.js?v=' + new Date().getTime();
     window.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('crt-container');
         const viewer = new CRTViewer(container);

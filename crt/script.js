@@ -491,7 +491,4 @@ export class CRTViewer {
         // Render main scene to the canvas
         this.composer.render();
     }
-}
-
-// Initialize the viewer
-export { CRTViewer }; 
+} 
