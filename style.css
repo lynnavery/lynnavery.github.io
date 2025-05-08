@@ -1,3 +1,11 @@
+:root {
+	--color-background: #000000;
+	--color-primary: #ffffff;
+	--color-dark: #ffffff;
+	--color-white: #000000;
+	--color-black: rgb(255, 255, 255);
+}
+
 /* Retro Terminal Theme */
 ul.contact li {
 	list-style: none;
@@ -6,21 +14,21 @@ ul li {
 	list-style: none;
 }
 .nav {
-	background-color: #FFF8E8;
+	background-color: var(--color-background);
 	padding: 10px;
 	text-align: center;
-	border-top: 2px solid #0E1C36;
-	border-bottom: 2px solid #0E1C36;
+	border-top: 2px solid var(--color-primary);
+	border-bottom: 2px solid var(--color-primary);
 	margin-bottom: 10px;
 }
 .date {
 	text-align: center;
-	color: #0E1C36;
+	color: var(--color-primary);
 	margin-bottom: 10px;
 }
 body {
-	background-color: #FFF8E8;
-	color: #0E1C36;
+	background-color: var(--color-background);
+	color: var(--color-primary);
 	font-family: 'Courier New', Courier, monospace, monospace;
 	font-size: 16px;
 	line-height: 1.5;
@@ -30,7 +38,7 @@ body {
 }
 
 a {
-	color: #0E1C36;
+	color: var(--color-primary);
 	text-decoration: none;
 }
 button a {
@@ -39,7 +47,7 @@ button a {
 }
 
 button a:hover {
-	color: #FFF8E8;
+	color: var(--color-background);
 	text-decoration: none;
 }
 a:hover {
@@ -47,11 +55,11 @@ a:hover {
 }
 
 header, footer {
-	background-color: #111;
+	background-color: var(--color-dark);
 	padding: 10px;
 	text-align: center;
-	border-top: 2px solid #0E1C36;
-	border-bottom: 2px solid #0E1C36;
+	border-top: 2px solid var(--color-primary);
+	border-bottom: 2px solid var(--color-primary);
 
 }
 h1 {
@@ -62,9 +70,9 @@ h1 {
 	text-align: center;
 }
 button {
-	background-color: FFF8E8;
-	color: #0E1C36;
-	border: 1px solid #0E1C36;
+	background-color: var(--color-background);
+	color: var(--color-primary);
+	border: 1px solid var(--color-primary);
 	margin: 1px;
     font-family: inherit; /* Inherit font family from body */
     font-size: inherit; /* Inherit font size from body */
@@ -75,19 +83,19 @@ button {
 }
 
 button:hover {
-	background-color: #0E1C36;
-	color: rgb(255, 255, 255);
+	background-color: var(--color-primary);
+	color: var(--color-white);
 }
 
 input, textarea {
-	background-color: black;
-	color: #ffffff;
-	border: 1px solid #ffffff;
+	background-color: var(--color-black);
+	color: var(--color-white);
+	border: 1px solid var(--color-white);
 	font-family: 'Courier New', Courier, monospace;}
 
 ::selection {
-	background-color: #ffffff;
-	color: black;
+	background-color: var(--color-white);
+	color: var(--color-black);
 }
 .grid-item img {
     width: 100%; /* Make the image fill the width of the grid item */
@@ -119,7 +127,7 @@ input, textarea {
     display: none; /* Hide scrollbar in WebKit browsers (Chrome, Safari) */
 }
 .grid-item {
-    border: 3px double #0E1C36;
+    border: 3px double var(--color-primary);
     padding: 5px;
     box-sizing: border-box;
     text-align: left;
@@ -131,7 +139,7 @@ input, textarea {
 	height: 100%;
 }
 .subgrid-item {
-	border: 3px double #0E1C36;
+	border: 3px double var(--color-primary);
 	padding: 5px;
 	box-sizing: border-box;
 	text-align: left;

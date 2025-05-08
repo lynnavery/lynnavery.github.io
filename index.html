@@ -17,8 +17,28 @@
 </style>   
 </head>
 <body>
-    <div class='nav'><a class='title' href='index.html'>please call to book</a><br>(803)-710-BOOK</div>
-    
+    <div class='nav'><a class='title' href='index.html'>please call to book</a><br>(803)-710-BOOK<br> "not a booking agency"</div>
+    <div class="grid-container">
+        <div class="grid-item"> 
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.162.0/build/three.module.js",
+            "three/examples/jsm/loaders/GLTFLoader.js": "https://unpkg.com/three@0.162.0/examples/jsm/loaders/GLTFLoader.js",
+            "three/examples/jsm/loaders/FBXLoader.js": "https://unpkg.com/three@0.162.0/examples/jsm/loaders/FBXLoader.js"
+        }
+    }
+    </script>
+    <div id="crt-container"></div>
+</div>
+
+<script type="module">
+    import { CRTViewer } from './crt/script.js';
+    window.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('crt-container');
+        const viewer = new CRTViewer(container);
+    });
+</script>
     <div class="grid-container">
         <div class="grid-item">
             <h1>Upcoming Events</h1>
@@ -77,27 +97,7 @@
             </ul>
         </div>
     </div>
-    <div class="grid-container">
-        <div class="grid-item"> 
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://unpkg.com/three@0.162.0/build/three.module.js",
-            "three/examples/jsm/loaders/GLTFLoader.js": "https://unpkg.com/three@0.162.0/examples/jsm/loaders/GLTFLoader.js",
-            "three/examples/jsm/loaders/FBXLoader.js": "https://unpkg.com/three@0.162.0/examples/jsm/loaders/FBXLoader.js"
-        }
-    }
-    </script>
-    <div id="crt-container"></div>
-</div>
-
-<script type="module">
-    import { CRTViewer } from './crt/script.js';
-    window.addEventListener('DOMContentLoaded', () => {
-        const container = document.getElementById('crt-container');
-        const viewer = new CRTViewer(container);
-    });
-</script>
+    
 
 </body>
 

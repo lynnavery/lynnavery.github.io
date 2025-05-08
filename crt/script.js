@@ -18,6 +18,17 @@ class CRTViewer {
             sensitivity: 0.0008
         };
         
+        // Gyroscope controls
+        this.gyroscope = {
+            enabled: false,
+            sensitivity: 0.01,
+            lastBeta: 0,
+            lastGamma: 0,
+            lastAlpha: 0,
+            smoothing: 0.1,
+            isPortrait: window.innerHeight > window.innerWidth
+        };
+        
         // Store the container element
         this.containerElement = containerElement;
         
@@ -181,11 +192,11 @@ class CRTViewer {
         // Add cats image overlay
         const textureLoader = new THREE.TextureLoader();
         textureLoader.load('cats.png', (texture) => {
-            const overlayGeometry = new THREE.PlaneGeometry(screenWidth * 0.8, screenHeight * 0.8); // Slightly smaller than the screen
+            const overlayGeometry = new THREE.PlaneGeometry(screenWidth, screenHeight * 0.8); // Slightly smaller than the screen
             const overlayMaterial = new THREE.MeshBasicMaterial({
                 map: texture,
                 transparent: true,
-                opacity: 0.8,
+                opacity: 1,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false
             });
@@ -215,6 +226,9 @@ class CRTViewer {
         this.containerElement.addEventListener('touchstart', this.onTouchStart.bind(this));
         this.containerElement.addEventListener('touchmove', this.onTouchMove.bind(this));
         this.containerElement.addEventListener('touchend', this.onTouchEnd.bind(this));
+        
+        // Gyroscope controls
+        window.addEventListener('deviceorientation', this.onDeviceOrientation.bind(this));
         
         // Pointer lock change
         document.addEventListener('pointerlockchange', this.onPointerLockChange.bind(this));
@@ -285,6 +299,75 @@ class CRTViewer {
         this.mainCamera.aspect = containerWidth / this.containerElement.clientHeight;
         this.mainCamera.updateProjectionMatrix();
         this.composer.setSize(containerWidth, this.containerElement.clientHeight);
+        
+        // Update orientation mode
+        this.gyroscope.isPortrait = window.innerHeight > window.innerWidth;
+    }
+
+    onDeviceOrientation(event) {
+        // Debug logging
+        console.log('Device Orientation Event:', {
+            alpha: event.alpha,
+            beta: event.beta,
+            gamma: event.gamma,
+            absolute: event.absolute
+        });
+
+        // Check if device orientation is available
+        if (event.beta === null || event.gamma === null || event.alpha === null) {
+            console.log('Device orientation not available');
+            return;
+        }
+
+        // Update orientation mode
+        this.gyroscope.isPortrait = window.innerHeight > window.innerWidth;
+        console.log('Is Portrait Mode:', this.gyroscope.isPortrait);
+
+        // Enable gyroscope controls if not already enabled
+        if (!this.gyroscope.enabled) {
+            console.log('Enabling gyroscope controls');
+            this.gyroscope.enabled = true;
+            this.gyroscope.lastBeta = event.beta;
+            this.gyroscope.lastGamma = event.gamma;
+            this.gyroscope.lastAlpha = event.alpha;
+            return;
+        }
+
+        // Calculate rotation changes with smoothing
+        const beta = event.beta; // -180 to 180 (front/back)
+        const gamma = event.gamma; // -90 to 90 (left/right)
+        const alpha = event.alpha; // 0 to 360 (compass direction)
+
+        // Apply smoothing
+        const betaDelta = (beta - this.gyroscope.lastBeta) * this.gyroscope.smoothing;
+        const gammaDelta = (gamma - this.gyroscope.lastGamma) * this.gyroscope.smoothing;
+        const alphaDelta = (alpha - this.gyroscope.lastAlpha) * this.gyroscope.smoothing;
+
+        console.log('Rotation Deltas:', {
+            betaDelta,
+            gammaDelta,
+            alphaDelta
+        });
+
+        if (this.gyroscope.isPortrait) {
+            // Portrait mode controls
+            // Use gamma for left/right rotation (more natural in portrait)
+            this.mainCamera.rotation.y -= gammaDelta * this.gyroscope.sensitivity * 1.5;
+            
+            // Use beta for up/down rotation
+            const newRotationX = this.mainCamera.rotation.x - betaDelta * this.gyroscope.sensitivity;
+            this.mainCamera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, newRotationX));
+        } else {
+            // Landscape mode controls (original behavior)
+            const newRotationX = this.mainCamera.rotation.x - betaDelta * this.gyroscope.sensitivity;
+            this.mainCamera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, newRotationX));
+            this.mainCamera.rotation.y -= gammaDelta * this.gyroscope.sensitivity;
+        }
+
+        // Store current values for next frame
+        this.gyroscope.lastBeta = beta;
+        this.gyroscope.lastGamma = gamma;
+        this.gyroscope.lastAlpha = alpha;
     }
 
     applyCameraShake() {
