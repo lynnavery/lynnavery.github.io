@@ -17,4 +17,7 @@ package-lock.json
 # Build and cache directories
 dist/
 build/
-.cache/ 
+.cache/
+
+# Server scripts
+start-server.sh 

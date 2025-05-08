@@ -6,7 +6,7 @@ import { EffectComposer } from 'https://unpkg.com/three@0.126.1/examples/jsm/pos
 import { RenderPass } from 'https://unpkg.com/three@0.126.1/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'https://unpkg.com/three@0.126.1/examples/jsm/postprocessing/UnrealBloomPass.js';
 
-class CRTViewer {
+export class CRTViewer {
     constructor(containerElement) {
         if (!containerElement) {
             throw new Error('Container element must be provided to CRTViewer');
@@ -26,8 +26,7 @@ class CRTViewer {
             lastGamma: 0,
             lastAlpha: 0,
             smoothing: 0.1,
-            isPortrait: window.innerHeight > window.innerWidth,
-            permissionGranted: false
+            isPortrait: window.innerHeight > window.innerWidth
         };
         
         // Store the container element
@@ -228,8 +227,8 @@ class CRTViewer {
         this.containerElement.addEventListener('touchmove', this.onTouchMove.bind(this));
         this.containerElement.addEventListener('touchend', this.onTouchEnd.bind(this));
         
-        // Request device orientation permission
-        this.requestDeviceOrientationPermission();
+        // Gyroscope controls
+        window.addEventListener('deviceorientation', this.onDeviceOrientation.bind(this));
         
         // Pointer lock change
         document.addEventListener('pointerlockchange', this.onPointerLockChange.bind(this));
@@ -239,28 +238,6 @@ class CRTViewer {
         
         // Window resize
         window.addEventListener('resize', this.onWindowResize.bind(this));
-    }
-
-    async requestDeviceOrientationPermission() {
-        // Check if the DeviceOrientationEvent is available
-        if (typeof DeviceOrientationEvent === 'undefined' || !DeviceOrientationEvent.requestPermission) {
-            console.log('DeviceOrientationEvent not available');
-            return;
-        }
-
-        try {
-            // Request permission
-            const permission = await DeviceOrientationEvent.requestPermission();
-            if (permission === 'granted') {
-                console.log('Device orientation permission granted');
-                this.gyroscope.permissionGranted = true;
-                window.addEventListener('deviceorientation', this.onDeviceOrientation.bind(this));
-            } else {
-                console.log('Device orientation permission denied');
-            }
-        } catch (error) {
-            console.error('Error requesting device orientation permission:', error);
-        }
     }
 
     onMouseClick() {
@@ -328,11 +305,6 @@ class CRTViewer {
     }
 
     onDeviceOrientation(event) {
-        // Check if we have permission
-        if (!this.gyroscope.permissionGranted) {
-            return;
-        }
-
         // Debug logging
         console.log('Device Orientation Event:', {
             alpha: event.alpha,
