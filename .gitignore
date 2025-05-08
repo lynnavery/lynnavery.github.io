@@ -1,0 +1,20 @@
+# SSL certificates
+*.pem
+cert.pem
+key.pem
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Build and cache directories
+dist/
+build/
+.cache/ 
