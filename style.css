@@ -113,8 +113,32 @@ input, textarea {
     grid-template-columns: 1fr; /* Single column on mobile */
     grid-gap: 10px;
     width: 100%;
-
 }
+
+/* Add styles for video container */
+.video-container {
+    display: grid;
+    grid-template-columns: 1fr; /* Single column on mobile */
+    grid-gap: 10px;
+    width: 100%;
+}
+
+/* Make videos responsive */
+.video-js {
+    width: 100% !important;
+    aspect-ratio: 16/9;
+    height: auto !important;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.video-js .vjs-tech,
+.video-js .vjs-poster {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
+}
+
 .subgrid-container {
 	display: grid;
 	grid-template-columns:  1fr; /* Single column on mobile */
@@ -178,6 +202,10 @@ input, textarea {
 	.grid-item {
 		height: auto; 
 	}
+	.video-container {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Minimum 300px width on desktop */
+        width: 100%;
+    }
 }
 img { 
     image-rendering: optimizeSpeed;             /* STOP SMOOTHING, GIVE ME SPEED  */
@@ -187,7 +215,7 @@ img {
     image-rendering: pixelated;                 /* Universal support since 2021   */
     image-rendering: optimize-contrast;         /* CSS3 Proposed                  */
     -ms-interpolation-mode: nearest-neighbor;   /* IE8+                           */
-	mix-blend-mode: multiply;
+	
 }
 #crt-container {
 	width: 100%;  /* Set your desired width */

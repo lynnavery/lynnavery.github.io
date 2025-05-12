@@ -1,0 +1,247 @@
+/* Retro Terminal Style Video.js */
+
+/* Player container */
+.video-js {
+    background-color: #000;
+    border: 1px solid #fff;
+    font-family: monospace;
+}
+
+/* Control bar: allow wrapping and auto height */
+.video-js .vjs-control-bar {
+    background-color: #000;
+    border-top: 1px solid #fff;
+    display: flex !important;
+    flex-wrap: nowrap;
+    align-items: center;
+    height: 2.2em !important;
+    padding: 0.1em 0.2em;
+    font-size: 1em;
+    gap: 0.2em;
+}
+
+/* Play control: keep width and align with progress */
+.video-js .vjs-play-control {
+    flex: 0 0 auto;
+    width: 2.2em;
+    order: 1;
+}
+
+/* Progress control: take remaining space */
+.video-js .vjs-progress-control {
+    flex: 1 1 auto;
+    order: 2;
+    margin: 0;
+    min-width: 0;
+}
+
+/* Controls: minimal, monospace, no overlap */
+.video-js .vjs-control {
+    color: #fff;
+    background: none;
+    border: 0px solid #fff;
+    font-family: monospace;
+    font-size: 1em;
+    min-width: 2.2em;
+    height: 2.2em !important;
+    min-height: 2.2em;
+    margin: 0.1em 0.1em;
+    padding: 0.1em 0.4em;
+    box-sizing: border-box;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-js .vjs-control:hover {
+
+}
+
+/* Big play button: terminal look, hide when playing */
+.video-js .vjs-big-play-button {
+    background: #000;
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 0;
+    font-family: monospace;
+    font-size: 1.2em;
+    width: auto;
+    height: 2.2em !important;
+    min-width: 4em;
+    min-height: 2.2em;
+    margin: 0;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0.2em 0.8em;
+    box-shadow: none;
+    opacity: 1;
+    transition: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-js.vjs-has-started .vjs-big-play-button,
+.video-js.vjs-playing .vjs-big-play-button,
+.video-js.vjs-using-native-controls .vjs-big-play-button,
+.video-js.vjs-controls-disabled .vjs-big-play-button {
+    display: none !important;
+}
+
+.video-js .vjs-big-play-button .vjs-icon-placeholder {
+    color: #fff;
+    font-family: monospace;
+    font-size: 1em;
+}
+
+/* Progress bar and volume bar: terminal style */
+.video-js .vjs-progress-control {
+    height: 1.2em;
+    min-width: 120px;
+    width: 100%;
+    margin: 0.2em 0;
+}
+
+.video-js .vjs-progress-holder {
+    background: #000;
+    border: 1px solid #fff;
+    height: 1em;
+    width: 100%;
+    position: relative;
+    margin: 0;
+}
+
+/* Hide the loaded/buffered bar */
+.video-js .vjs-load-progress,
+.video-js .vjs-load-progress div {
+    display: none !important;
+}
+
+/* Show only a solid white progress bar */
+.video-js .vjs-play-progress {
+    background: #fff;
+    height: 100%;
+    border: none;
+}
+
+/* Hide the seek handle for a more minimal look */
+.video-js .vjs-slider-handle {
+    display: none !important;
+}
+
+/* Hide time tooltip above the bar */
+.video-js .vjs-mouse-display,
+.video-js .vjs-time-tooltip {
+    display: none !important;
+}
+
+/* Time display */
+.video-js .vjs-time-control {
+    color: #fff;
+    font-family: monospace;
+    font-size: 1em;
+    padding: 0 0.3em;
+}
+
+/* Menu styling */
+.video-js .vjs-menu {
+    background: #000;
+    border: 1px solid #fff;
+}
+.video-js .vjs-menu li {
+    color: #fff;
+    font-family: monospace;
+    border-bottom: 1px solid #fff;
+    padding: 0.2em 0.8em;
+    height: 2.2em;
+    display: flex;
+    align-items: center;
+}
+.video-js .vjs-menu li:hover {
+    background: #fff;
+    color: #000;
+}
+
+/* Remove all shadows, gradients, and fancy effects */
+.video-js * {
+    text-shadow: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    backdrop-filter: none !important;
+}
+
+/* Tooltip styling */
+.video-js .vjs-time-tooltip,
+.video-js .vjs-volume-tooltip {
+    background: #000;
+    border: 1px solid #fff;
+    color: #fff;
+    font-family: monospace;
+    padding: 2px 4px;
+}
+
+/* Custom poster image styling */
+.video-js .vjs-poster {
+    background-size: cover;
+    background-position: center;
+}
+
+/* Custom menu styling */
+.video-js .vjs-menu li {
+    padding: 0.5em 1em;
+    font-size: 1.1em;
+}
+
+.video-js .vjs-menu li:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Custom tooltip styling */
+.video-js .vjs-time-tooltip,
+.video-js .vjs-volume-tooltip {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+/* Hide live controls */
+.video-js .vjs-live-control,
+.video-js .vjs-seek-to-live-control {
+    display: none !important;
+}
+
+/* Hide picture-in-picture controls */
+.video-js .vjs-picture-in-picture-control {
+    display: none !important;
+}
+
+/* Hide all controls except progress bar and play/pause */
+.video-js .vjs-volume-panel,
+.video-js .vjs-time-control,
+.video-js .vjs-fullscreen-control,
+.video-js .vjs-picture-in-picture-control,
+.video-js .vjs-remaining-time,
+.video-js .vjs-current-time,
+.video-js .vjs-duration,
+.video-js .vjs-time-divider,
+.video-js .vjs-playback-rate,
+.video-js .vjs-chapters-button,
+.video-js .vjs-descriptions-button,
+.video-js .vjs-subtitles-button,
+.video-js .vjs-captions-button,
+.video-js .vjs-audio-button,
+.video-js .vjs-quality-button,
+.video-js .vjs-menu-button,
+.video-js .vjs-volume-level,
+.video-js .vjs-volume-control,
+.video-js .vjs-mute-control {
+    display: none !important;
+}
+
+/* Ensure play/pause button and progress bar remain visible */
+.video-js .vjs-play-control,
+.video-js .vjs-progress-control {
+    display: flex !important;
+} 

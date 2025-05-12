@@ -18,5 +18,8 @@
   "homepage": "https://github.com/lynnavery/lynnavery.github.io#readme",
   "dependencies": {
     "lightgallery.js": "^1.0.3"
+  },
+  "devDependencies": {
+    "video.js": "^8.22.0"
   }
 }
