@@ -128,7 +128,7 @@ input, textarea {
 .video-js {
     width: 100% !important;
     height: 0 !important;
-    padding-top: 56.25% !important; /* 16:9 Aspect Ratio */
+    padding-top: 177.7777777778% !important; /* 9:16 Aspect Ratio */
     position: relative !important;
     background: #000;
 }
@@ -215,8 +215,8 @@ input, textarea {
 		height: auto; 
 	}
 	.video-container {
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Minimum 400px width on desktop */
-        max-width: 1200px; /* Maximum width for the container */
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Reduced minimum width for portrait videos */
+        max-width: 1200px;
         margin: 0 auto;
     }
 }
