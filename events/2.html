@@ -15,6 +15,17 @@
 	<link rel="stylesheet" href="../css/videojs/video-js.css">
 	<link rel="stylesheet" href="../css/videojs-custom.css">
 	<script src="../js/videojs/video.min.js"></script>
+	<script>
+		// Initialize all video players when the page loads
+		document.addEventListener('DOMContentLoaded', function() {
+			var players = videojs.getAllPlayers();
+			players.forEach(function(player) {
+				player.ready(function() {
+					console.log('Player ready:', player.id());
+				});
+			});
+		});
+	</script>
 <style>
 
 </style>   
@@ -58,14 +69,15 @@
             <div class="video-container">
                 <video
                     id="my-video"
-                    class="video-js"
+                    class="video-js vjs-default-skin"
                     controls
                     preload="auto"
                     width="360"
                     height="auto"
-                    data-setup="{}"
+                    poster=""
+                    data-setup='{"fluid": true}'
                 >
-                    <source src="../video/5-11-25/karol.mp4" type="video/mp4" />
+                    <source src="https://steropes.feralhosting.com/ephemera/video/5-11-25/karol.mp4" type="video/mp4" />
                     <p class="vjs-no-js">
                         To view this video please enable JavaScript, and consider upgrading to a
                         web browser that supports HTML5 video
@@ -73,14 +85,15 @@
                 </video>
                 <video
                     id="my-video-2"
-                    class="video-js"
+                    class="video-js vjs-default-skin"
                     controls
                     preload="auto"
                     width="360"
                     height="auto"
-                    data-setup="{}"
+                    poster=""
+                    data-setup='{"fluid": true}'
                 >
-                    <source src="../video/5-11-25/contacto.mp4" type="video/mp4" />
+                    <source src="https://steropes.feralhosting.com/ephemera/video/5-11-25/contacto.mp4" type="video/mp4" />
                     <p class="vjs-no-js">
                         To view this video please enable JavaScript, and consider upgrading to a
                         web browser that supports HTML5 video
@@ -88,14 +101,15 @@
                 </video>
                 <video
                     id="my-video-3"
-                    class="video-js"
+                    class="video-js vjs-default-skin"
                     controls
                     preload="auto"
                     width="360"
                     height="auto"
-                    data-setup="{}"
+                    poster=""
+                    data-setup='{"fluid": true}'
                 >
-                    <source src="../video/5-11-25/beneviolence.mp4" type="video/mp4" />
+                    <source src="https://steropes.feralhosting.com/ephemera/video/5-11-25/beneviolence.mp4" type="video/mp4" />
                     <p class="vjs-no-js">
                         To view this video please enable JavaScript, and consider upgrading to a
                         web browser that supports HTML5 video
