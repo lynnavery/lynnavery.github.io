@@ -1,0 +1,29 @@
+{
+    "date": "Monday July 15, 2025",
+    "hasPassed": false,
+    "artists": [
+        {
+            "name": "Briana Marela",
+            "link": "",
+            "description": ""
+        },
+        {
+            "name": "alicedoescomputermusic",
+            "link": "",
+            "description": ""
+        },
+        {
+            "name": "Pink Must",
+            "link": "https://pinkmust.bandcamp.com",
+            "description": "NYC madchenmusik, music for girls who smoke weed"
+        }
+    ],
+    "venue": {
+        "name": "Nightclub101, Brooklyn",
+        "link": "",
+        "address": ""
+    },
+    "time": "TBA",
+    "price": "TBA",
+    "image": "../img/2024-07-15.png"
+}

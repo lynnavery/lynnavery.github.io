@@ -1,0 +1,29 @@
+{
+    "date": "Tuesday June 25, 2025",
+    "hasPassed": false,
+    "artists": [
+        {
+            "name": "Auwbe",
+            "link": "",
+            "description": ""
+        },
+        {
+            "name": "Kaho Matsui",
+            "link": "",
+            "description": ""
+        },
+        {
+            "name": "Jadelain",
+            "link": "",
+            "description": ""
+        }
+    ],
+    "venue": {
+        "name": "Cassette, Brooklyn",
+        "link": "",
+        "address": ""
+    },
+    "time": "TBA",
+    "price": "TBA",
+    "image": "../img/2024-06-25.png"
+}
