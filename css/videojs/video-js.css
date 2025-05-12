@@ -16,7 +16,7 @@
     line-height: 1;
     font-weight: 400;
     font-style: normal;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Courier New", Courier, monospace;
     word-break: initial;
 }
 
@@ -118,7 +118,7 @@ body.vjs-pip-window .video-js {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 3em;
+    height: 24px;
     background-color: #2b333f;
     background-color: rgba(43, 51, 63, 0.7);
 }
@@ -198,7 +198,7 @@ body.vjs-pip-window .video-js {
 }
 
 .video-js .vjs-volume-bar {
-    margin: 1.35em 0.45em;
+    margin: 8px 0.45em;
 }
 
 .video-js .vjs-volume-level {
@@ -212,7 +212,7 @@ body.vjs-pip-window .video-js {
 .video-js .vjs-time-control {
     flex: none;
     font-size: 1em;
-    line-height: 3em;
+    line-height: 24px;
     min-width: 2em;
     width: auto;
     padding-left: 1em;
@@ -253,7 +253,7 @@ body.vjs-pip-window .video-js {
     display: block;
     padding: 0;
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Courier New", Courier, monospace;
     overflow: auto;
 }
 
@@ -313,7 +313,7 @@ body.vjs-pip-window .video-js {
     color: #fff;
     background-color: #000;
     font-size: 18px;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Courier New", Courier, monospace;
     text-align: center;
     width: 300px;
     height: 150px;
