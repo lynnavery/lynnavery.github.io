@@ -95,7 +95,10 @@
             const artistsList = document.getElementById('artists-list');
             eventData.artists.forEach(artist => {
                 const li = document.createElement('li');
-                li.innerHTML = `<button><a href="${artist.link}">${artist.name}</a></button><br>${artist.description}`;
+                const artistLink = artist.link ? `<a href="${artist.link}">` : '';
+                const artistLinkEnd = artist.link ? '</a>' : '';
+                const artistDesc = artist.description ? `<br>${artist.description}` : '';
+                li.innerHTML = `<button>${artistLink}${artist.name}${artistLinkEnd}</button>${artistDesc}`;
                 artistsList.appendChild(li);
                 artistsList.appendChild(document.createElement('br'));
             });
@@ -104,21 +107,25 @@
             const eventDetails = document.getElementById('event-details');
             const details = [
                 `<i>${eventData.date.split(',')[0]}</i>`,
-                `<a href="${eventData.venue.link}">@ ${eventData.venue.name}</a>`,
-                eventData.venue.address,
+                eventData.venue.link ? 
+                    `<a href="${eventData.venue.link}">@ ${eventData.venue.name}</a>` :
+                    `@ ${eventData.venue.name}`,
+                eventData.venue.address || '',
                 eventData.hasPassed ? 
-                    `<strike><li>${eventData.time}</li><li>${eventData.price}</li></strike>` :
-                    `<li>${eventData.time}</li><li>${eventData.price}</li>`
-            ];
+                    `<strike><li>${eventData.time || ''}</li><li>${eventData.price || ''}</li></strike>` :
+                    `<li>${eventData.time || ''}</li><li>${eventData.price || ''}</li>`
+            ].filter(detail => detail !== ''); // Remove empty strings
             
             if (!eventData.hasPassed && eventData.ticketLink) {
                 details.push(`<li><a href="${eventData.ticketLink}"><button>Tickets</button></a></li>`);
             }
 
             details.forEach(detail => {
-                const li = document.createElement('li');
-                li.innerHTML = detail;
-                eventDetails.appendChild(li);
+                if (detail) { // Only add non-empty details
+                    const li = document.createElement('li');
+                    li.innerHTML = detail;
+                    eventDetails.appendChild(li);
+                }
             });
 
             // Handle media (image or videos)

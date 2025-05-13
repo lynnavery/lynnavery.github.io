@@ -198,35 +198,78 @@ def save_event():
         with open(EVENTS_DIR / filename, 'w') as f:
             json.dump(event_data, f, indent=4)
         
-        # Generate pages
-        result = subprocess.run(['python3', 'generate_events.py'], 
-                              capture_output=True, text=True, cwd=str(BASE_DIR))
-        
-        if result.returncode != 0:
-            return jsonify({'error': f'Generator script failed: {result.stderr}'}), 500
+        # Generate pages using the script from the correct directory
+        try:
+            result = subprocess.run(
+                ['python3', 'generate_events.py'],
+                cwd=str(BASE_DIR),
+                capture_output=True,
+                text=True,
+                check=True  # This will raise CalledProcessError if the script fails
+            )
+            print(f"Generator script output: {result.stdout}")
+            if result.stderr:
+                print(f"Generator script warnings: {result.stderr}")
+        except subprocess.CalledProcessError as e:
+            print(f"Generator script failed: {e.stderr}")
+            return jsonify({
+                'error': 'Failed to generate pages',
+                'details': e.stderr
+            }), 500
+        except Exception as e:
+            print(f"Error running generator script: {str(e)}")
+            return jsonify({
+                'error': 'Error running generator script',
+                'details': str(e)
+            }), 500
         
         # Commit and push changes
         success, message = commit_and_push_changes(f"Update event: {filename}")
         if not success:
             return jsonify({'warning': message}), 200  # Still return 200 since the save was successful
         
-        return jsonify({'success': True, 'message': message})
+        return jsonify({
+            'success': True,
+            'message': message,
+            'generated': True
+        })
     except Exception as e:
+        print(f"Error in save_event: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/generate', methods=['POST'])
 def generate_pages():
     try:
         # Run the generator script from the correct directory
-        result = subprocess.run(['python3', 'generate_events.py'], 
-                              capture_output=True, text=True, cwd=str(BASE_DIR))
+        result = subprocess.run(
+            ['python3', 'generate_events.py'],
+            cwd=str(BASE_DIR),
+            capture_output=True,
+            text=True,
+            check=True  # This will raise CalledProcessError if the script fails
+        )
         
-        if result.returncode != 0:
-            return jsonify({'error': f'Generator script failed: {result.stderr}'}), 500
+        print(f"Generator script output: {result.stdout}")
+        if result.stderr:
+            print(f"Generator script warnings: {result.stderr}")
         
-        return jsonify({'success': True})
+        return jsonify({
+            'success': True,
+            'message': 'Pages generated successfully',
+            'output': result.stdout
+        })
+    except subprocess.CalledProcessError as e:
+        print(f"Generator script failed: {e.stderr}")
+        return jsonify({
+            'error': 'Failed to generate pages',
+            'details': e.stderr
+        }), 500
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Error running generator script: {str(e)}")
+        return jsonify({
+            'error': 'Error running generator script',
+            'details': str(e)
+        }), 500
 
 if __name__ == '__main__':
     # In development, run without SSL

@@ -67,83 +67,125 @@
                 hasPassed: {
                     type: 'boolean',
                     title: 'Has Event Passed',
-                    default: false
+                    default: false,
+                    description: 'Check this if the event has already happened'
                 },
                 artists: {
                     type: 'array',
                     title: 'Artists',
+                    description: 'Add one or more artists performing at the event',
                     items: {
                         type: 'object',
                         required: ['name'],
                         properties: {
                             name: {
                                 type: 'string',
-                                title: 'Artist Name'
+                                title: 'Artist Name',
+                                description: 'Name of the artist or band'
                             },
                             link: {
                                 type: 'string',
                                 title: 'Artist Link',
-                                format: 'uri'
+                                format: 'uri',
+                                description: 'Website or social media link for the artist'
                             },
                             description: {
                                 type: 'string',
-                                title: 'Artist Description'
+                                title: 'Artist Description',
+                                description: 'Brief description of the artist'
                             }
                         }
                     }
                 },
                 venue: {
                     type: 'object',
+                    title: 'Venue Information',
                     required: ['name'],
                     properties: {
                         name: {
                             type: 'string',
-                            title: 'Venue Name'
+                            title: 'Venue Name',
+                            description: 'Name of the venue'
                         },
                         link: {
                             type: 'string',
                             title: 'Venue Link',
-                            format: 'uri'
+                            format: 'uri',
+                            description: 'Website for the venue'
                         },
                         address: {
                             type: 'string',
-                            title: 'Venue Address'
+                            title: 'Venue Address',
+                            description: 'Full address of the venue'
                         }
                     }
                 },
                 time: {
                     type: 'string',
-                    title: 'Event Time'
+                    title: 'Event Time',
+                    description: 'Time of the event (e.g., "7:00 PM")'
                 },
                 price: {
                     type: 'string',
-                    title: 'Ticket Price'
+                    title: 'Ticket Price',
+                    description: 'Price of tickets (e.g., "$20", "Free", "$15-25")'
                 },
                 ticketLink: {
                     type: 'string',
                     title: 'Ticket Link',
-                    format: 'uri'
+                    format: 'uri',
+                    description: 'Link to purchase tickets'
                 },
                 image: {
                     type: 'string',
-                    title: 'Image Path',
-                    description: 'Path to event image (e.g., "../img/2025-05-09.png")'
+                    title: 'Event Image',
+                    description: 'Path to event image (e.g., "img/2025-05-09.png")',
+                    pattern: '^img/[^/]+\\.(png|jpg|jpeg|gif)$'
                 },
                 videos: {
                     type: 'array',
                     title: 'Videos (for past events)',
+                    description: 'Add video links for past events',
                     items: {
                         type: 'object',
                         properties: {
                             url: {
                                 type: 'string',
                                 title: 'Video URL',
-                                format: 'uri'
+                                format: 'uri',
+                                description: 'URL to the video (YouTube, Vimeo, etc.)'
                             }
                         }
                     }
                 }
             }
+        };
+
+        // Initialize JSON Editor with custom options
+        const options = {
+            schema: schema,
+            theme: 'html',
+            iconlib: 'bootstrap3',
+            disable_edit_json: true,
+            disable_properties: true,
+            disable_collapse: true,
+            form_name_root: 'event',
+            no_additional_properties: true,
+            required_by_default: true,
+            show_errors: 'always',
+            display_required_only: false,
+            show_opt_in: true,
+            object_layout: 'normal',
+            array_layout: 'table',
+            enum_titles: ['Yes', 'No'],
+            template: 'handlebars',
+            prompt_before_delete: true,
+            remove_empty_properties: false,
+            use_default_values: true,
+            show_array_validation: true,
+            show_array_add_another: true,
+            show_array_delete_all: true,
+            show_array_delete_last: true
         };
 
         // Add Flatpickr CSS and JS
@@ -306,18 +348,6 @@
                 }
             }
             
-            const options = {
-                schema: schema,
-                theme: 'html',
-                iconlib: 'bootstrap3',
-                disable_edit_json: true,
-                disable_properties: true,
-                disable_collapse: true,
-                form_name_root: 'event',
-                no_additional_properties: true,
-                required_by_default: true
-            };
-            
             // Create the editor first
             editor = new JSONEditor(document.getElementById('jsoneditor'), options);
             
@@ -373,8 +403,11 @@
                     throw new Error(result.error || 'Failed to save event');
                 }
 
-                // Show success message with Git status if available
+                // Show success message with Git status and generation status
                 let message = 'Event saved successfully!';
+                if (result.generated) {
+                    message += ' Pages generated successfully.';
+                }
                 if (result.message) {
                     message += ` ${result.message}`;
                 }
@@ -395,10 +428,34 @@
             }
         }
 
+        // Add a function to manually generate pages
+        async function generatePages() {
+            const status = document.getElementById('save_status');
+            try {
+                const response = await fetch(`${API_BASE}/generate`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to generate pages');
+                }
+                
+                status.textContent = result.message || 'Pages generated successfully!';
+                status.style.color = 'green';
+            } catch (error) {
+                console.error('Error generating pages:', error);
+                status.textContent = `Error: ${error.message}`;
+                status.style.color = 'red';
+            }
+        }
+
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
             loadEvents();
             document.getElementById('save-btn').onclick = saveEvent;
+            document.getElementById('generate-btn').onclick = generatePages;
         });
     </script>
 </body>

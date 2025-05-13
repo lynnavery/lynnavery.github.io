@@ -14,7 +14,7 @@
     <!-- Video.js CSS will be conditionally included -->
     <script>
         // This will be replaced with actual event data
-        const eventData = {"id": "2", "date": "Sunday May 11, 2025", "hasPassed": true, "artists": [{"name": "Karol Konstancia", "link": "https://www.youtube.com/watch?v=o4bHpN8xpjc", "description": "NYC industrial drone with elements of central European folk songwriting"}, {"name": "Beneviolence", "link": "https://beneviolence.bandcamp.com/track/mean", "description": "Suicide-beats, noisey bass, and washed out vocals"}, {"name": "Contacto", "link": "https://deardogs.bandcamp.com/album/astray", "description": "Dark guitar strumming from Spain"}], "venue": {"name": "P.I.T., Brooklyn", "link": "https://www.propertyistheft.org/", "address": "411 South 5th St, Los Sures, Williamsburg. Brooklyn, NY 11211"}, "time": "5pm to 8pm", "price": "$10-$15, your support goes to a touring artist", "videos": [{"url": "https://steropes.feralhosting.com/ephemera/video/5-11-25/karol.mp4"}, {"url": "https://steropes.feralhosting.com/ephemera/video/5-11-25/contacto.mp4"}, {"url": "https://steropes.feralhosting.com/ephemera/video/5-11-25/beneviolence.mp4"}], "upcoming_events": [{"date": "Tuesday June 25, 2025", "hasPassed": false, "artists": [{"name": "Auwbe", "link": "", "description": ""}, {"name": "Kaho Matsui", "link": "", "description": ""}, {"name": "Jadelain", "link": "", "description": ""}], "venue": {"name": "Cassette, Brooklyn", "link": "", "address": ""}, "time": "TBA", "price": "TBA", "image": "../img/2024-06-25.png"}, {"date": "Monday July 15, 2025", "hasPassed": false, "artists": [{"name": "Briana Marela", "link": "", "description": ""}, {"name": "alicedoescomputermusic", "link": "", "description": ""}, {"name": "Pink Must", "link": "https://pinkmust.bandcamp.com", "description": "NYC madchenmusik, music for girls who smoke weed"}], "venue": {"name": "Nightclub101, Brooklyn", "link": "", "address": ""}, "time": "TBA", "price": "TBA", "image": "../img/2024-07-15.png"}]};
+        const eventData = {"id": "2", "date": "Sunday May 11, 2025", "hasPassed": true, "artists": [{"name": "Karol Konstancia", "link": "https://www.youtube.com/watch?v=o4bHpN8xpjc", "description": "NYC industrial drone with elements of central European folk songwriting"}, {"name": "Beneviolence", "link": "https://beneviolence.bandcamp.com/track/mean", "description": "Suicide-beats, noisey bass, and washed out vocals"}, {"name": "Contacto", "link": "https://deardogs.bandcamp.com/album/astray", "description": "Dark guitar strumming from Spain"}], "venue": {"name": "P.I.T., Brooklyn", "link": "https://www.propertyistheft.org/", "address": "411 South 5th St, Los Sures, Williamsburg. Brooklyn, NY 11211"}, "time": "5pm to 8pm", "price": "$10-$15, your support goes to a touring artist", "videos": [{"url": "https://steropes.feralhosting.com/ephemera/video/5-11-25/karol.mp4"}, {"url": "https://steropes.feralhosting.com/ephemera/video/5-11-25/contacto.mp4"}, {"url": "https://steropes.feralhosting.com/ephemera/video/5-11-25/beneviolence.mp4"}], "upcoming_events": [{"date": "Wednesday June 11, 2025", "hasPassed": false, "artists": [{"name": "Celes & Karol Konstancia"}, {"name": "Embaci"}], "venue": {"name": "Kaleidoscope"}, "time": "7PM"}, {"date": "Tuesday June 25, 2025", "hasPassed": false, "artists": [{"name": "Auwbe", "link": "", "description": ""}, {"name": "Kaho Matsui", "link": "", "description": ""}, {"name": "Jadelain", "link": "", "description": ""}], "venue": {"name": "Cassette, Brooklyn", "link": "", "address": ""}, "time": "TBA", "price": "TBA", "image": "../img/2024-06-25.png"}, {"date": "Monday July 15, 2025", "hasPassed": false, "artists": [{"name": "Briana Marela", "link": "", "description": ""}, {"name": "alicedoescomputermusic", "link": "", "description": ""}, {"name": "Pink Must", "link": "https://pinkmust.bandcamp.com", "description": "NYC madchenmusik, music for girls who smoke weed"}], "venue": {"name": "Nightclub101, Brooklyn", "link": "", "address": ""}, "time": "TBA", "price": "TBA", "image": "../img/2024-07-15.png"}]};
         
         // If event has passed, include video.js
         if (eventData.hasPassed) {
@@ -95,7 +95,10 @@
             const artistsList = document.getElementById('artists-list');
             eventData.artists.forEach(artist => {
                 const li = document.createElement('li');
-                li.innerHTML = `<button><a href="${artist.link}">${artist.name}</a></button><br>${artist.description}`;
+                const artistLink = artist.link ? `<a href="${artist.link}">` : '';
+                const artistLinkEnd = artist.link ? '</a>' : '';
+                const artistDesc = artist.description ? `<br>${artist.description}` : '';
+                li.innerHTML = `<button>${artistLink}${artist.name}${artistLinkEnd}</button>${artistDesc}`;
                 artistsList.appendChild(li);
                 artistsList.appendChild(document.createElement('br'));
             });
@@ -104,21 +107,25 @@
             const eventDetails = document.getElementById('event-details');
             const details = [
                 `<i>${eventData.date.split(',')[0]}</i>`,
-                `<a href="${eventData.venue.link}">@ ${eventData.venue.name}</a>`,
-                eventData.venue.address,
+                eventData.venue.link ? 
+                    `<a href="${eventData.venue.link}">@ ${eventData.venue.name}</a>` :
+                    `@ ${eventData.venue.name}`,
+                eventData.venue.address || '',
                 eventData.hasPassed ? 
-                    `<strike><li>${eventData.time}</li><li>${eventData.price}</li></strike>` :
-                    `<li>${eventData.time}</li><li>${eventData.price}</li>`
-            ];
+                    `<strike><li>${eventData.time || ''}</li><li>${eventData.price || ''}</li></strike>` :
+                    `<li>${eventData.time || ''}</li><li>${eventData.price || ''}</li>`
+            ].filter(detail => detail !== ''); // Remove empty strings
             
             if (!eventData.hasPassed && eventData.ticketLink) {
                 details.push(`<li><a href="${eventData.ticketLink}"><button>Tickets</button></a></li>`);
             }
 
             details.forEach(detail => {
-                const li = document.createElement('li');
-                li.innerHTML = detail;
-                eventDetails.appendChild(li);
+                if (detail) { // Only add non-empty details
+                    const li = document.createElement('li');
+                    li.innerHTML = detail;
+                    eventDetails.appendChild(li);
+                }
             });
 
             // Handle media (image or videos)
