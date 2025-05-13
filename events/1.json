@@ -1,5 +1,4 @@
 {
-    "id": "1",
     "date": "Friday May 9, 2025",
     "hasPassed": true,
     "artists": [
@@ -26,20 +25,6 @@
     },
     "time": "7pm - 10pm",
     "price": "$20, your support goes to a touring artist",
-    "ticketLink": "https://dice.fm/event/xerdml-pink-must-colle-contacto-9th-may-union-pool-new-york-tickets?pid=579f1aa9&utm_medium=partners_api",
-    "image": "../img/1.png",
-    "upcomingEvents": [
-        {
-            "date": "May 11",
-            "title": "Karol Konstancia, Beneviolence, Contacto",
-            "venue": "P.I.T., Brooklyn",
-            "link": "../events/2.html"
-        },
-        {
-            "date": "July 15",
-            "title": "Briana Marela, alicedoescomputermusic, Pink Must",
-            "venue": "Nightclub101, Brooklyn",
-            "link": ""
-        }
-    ]
+    "ticketLink": "",
+    "image": "../img/1.png"
 }

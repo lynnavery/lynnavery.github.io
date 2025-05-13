@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Editor</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/admin/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+    <div class='nav'><a class='title' href='../index.html'>please call to book</a><br>(803)-710-BOOK</div>
+
+    <div id="events_list">
+        <h2>Manage Events</h2>
+        <div id="events_container"></div>
+        <button id="new_event_btn" onclick="showNewEventForm()">Create New Event</button>
+    </div>
+
+    <div id="editor-container" class="hidden">
+        <h2 id="editor_title">Create New Event</h2>
+        <div id="jsoneditor"></div>
+        <div class="button-container">
+            <button id="save-btn">Save Event</button>
+            <button id="generate-btn">Generate Pages</button>
+            <button id="cancel-btn" onclick="hideEditor()">Cancel</button>
+        </div>
+    </div>
+
+    <div id="save_status"></div>
+
+    <script>
+        // Set API base path for local development
+        const API_BASE = '';
+
+        // Event schema
+        const schema = {
+            type: 'object',
+            required: ['date', 'artists', 'venue'],
+            properties: {
+                date: {
+                    type: 'string',
+                    title: 'Event Date',
+                    format: 'date',
+                    description: 'Select the event date',
+                    options: {
+                        flatpickr: {
+                            dateFormat: 'l F j, Y',  // Format: "Monday May 12, 2025"
+                            allowInput: true,
+                            enableTime: false,
+                            locale: {
+                                firstDayOfWeek: 1,  // Start week on Monday
+                                weekdays: {
+                                    shorthand: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                                    longhand: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+                                },
+                                months: {
+                                    shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                                    longhand: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+                                }
+                            }
+                        }
+                    }
+                },
+                hasPassed: {
+                    type: 'boolean',
+                    title: 'Has Event Passed',
+                    default: false
+                },
+                artists: {
+                    type: 'array',
+                    title: 'Artists',
+                    items: {
+                        type: 'object',
+                        required: ['name'],
+                        properties: {
+                            name: {
+                                type: 'string',
+                                title: 'Artist Name'
+                            },
+                            link: {
+                                type: 'string',
+                                title: 'Artist Link',
+                                format: 'uri'
+                            },
+                            description: {
+                                type: 'string',
+                                title: 'Artist Description'
+                            }
+                        }
+                    }
+                },
+                venue: {
+                    type: 'object',
+                    required: ['name'],
+                    properties: {
+                        name: {
+                            type: 'string',
+                            title: 'Venue Name'
+                        },
+                        link: {
+                            type: 'string',
+                            title: 'Venue Link',
+                            format: 'uri'
+                        },
+                        address: {
+                            type: 'string',
+                            title: 'Venue Address'
+                        }
+                    }
+                },
+                time: {
+                    type: 'string',
+                    title: 'Event Time'
+                },
+                price: {
+                    type: 'string',
+                    title: 'Ticket Price'
+                },
+                ticketLink: {
+                    type: 'string',
+                    title: 'Ticket Link',
+                    format: 'uri'
+                },
+                image: {
+                    type: 'string',
+                    title: 'Image Path',
+                    description: 'Path to event image (e.g., "../img/2025-05-09.png")'
+                },
+                videos: {
+                    type: 'array',
+                    title: 'Videos (for past events)',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            url: {
+                                type: 'string',
+                                title: 'Video URL',
+                                format: 'uri'
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // Add Flatpickr CSS and JS
+        const flatpickrCSS = document.createElement('link');
+        flatpickrCSS.rel = 'stylesheet';
+        flatpickrCSS.href = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css';
+        document.head.appendChild(flatpickrCSS);
+
+        const flatpickrJS = document.createElement('script');
+        flatpickrJS.src = 'https://cdn.jsdelivr.net/npm/flatpickr';
+        document.head.appendChild(flatpickrJS);
+
+        // Wait for Flatpickr to load
+        flatpickrJS.onload = function() {
+            // Initialize JSON Editor with Flatpickr
+            JSONEditor.defaults.editors.date.format = 'date';
+            JSONEditor.defaults.editors.date.flatpickr = true;
+        };
+
+        let editor = null;
+        let currentEventFile = null;
+
+        function formatDateForDisplay(dateStr) {
+            // Convert "YYYY-MM-DD" to "Day Month DD, YYYY"
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function formatDateForFilename(dateStr) {
+            // Convert "Day Month DD, YYYY" to "YYYY-MM-DD"
+            const date = new Date(dateStr);
+            return date.toISOString().split('T')[0];
+        }
+
+        async function loadEvents() {
+            try {
+                const response = await fetch(`${API_BASE}/events`);
+                if (!response.ok) throw new Error('Failed to load events');
+                
+                const events = await response.json();
+                const container = document.getElementById('events_container');
+                container.innerHTML = '';
+                
+                events.forEach(event => {
+                    const eventDiv = document.createElement('div');
+                    eventDiv.className = 'event-item';
+                    
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'event-info';
+                    infoDiv.innerHTML = `
+                        <strong>${event.date}</strong><br>
+                        ${event.artists.map(artist => artist.name).join(', ')}<br>
+                        ${event.venue.name}
+                    `;
+                    
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.className = 'event-actions';
+                    
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'edit-btn';
+                    editBtn.textContent = 'Edit';
+                    editBtn.onclick = () => editEvent(event.filename);
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-btn';
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.onclick = () => deleteEvent(event.filename);
+                    
+                    actionsDiv.appendChild(editBtn);
+                    actionsDiv.appendChild(deleteBtn);
+                    
+                    eventDiv.appendChild(infoDiv);
+                    eventDiv.appendChild(actionsDiv);
+                    container.appendChild(eventDiv);
+                });
+            } catch (error) {
+                console.error('Error loading events:', error);
+                alert('Error loading events. Please try again.');
+            }
+        }
+
+        async function editEvent(filename) {
+            try {
+                const response = await fetch(`${API_BASE}/events/${filename}`);
+                if (!response.ok) throw new Error('Failed to load event');
+                
+                const eventData = await response.json();
+                console.log('Loaded event data:', eventData); // Debug log
+                currentEventFile = filename;
+                showEditor(eventData, 'Edit Event');
+            } catch (error) {
+                console.error('Error loading event:', error);
+                alert('Error loading event. Please try again.');
+            }
+        }
+
+        async function deleteEvent(filename) {
+            if (!confirm('Are you sure you want to delete this event?')) return;
+            
+            const status = document.getElementById('save_status');
+            try {
+                const response = await fetch(`${API_BASE}/events/${filename}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to delete event');
+                }
+
+                // Show success message with Git status if available
+                let message = 'Event deleted successfully!';
+                if (result.message) {
+                    message += ` ${result.message}`;
+                }
+                if (result.warning) {
+                    message += ` (Warning: ${result.warning})`;
+                }
+                
+                status.textContent = message;
+                status.style.color = result.warning ? 'orange' : 'green';
+                
+                await loadEvents();
+            } catch (error) {
+                console.error('Error deleting event:', error);
+                status.textContent = `Error: ${error.message}`;
+                status.style.color = 'red';
+            }
+        }
+
+        function showNewEventForm() {
+            currentEventFile = null;
+            showEditor({}, 'Create New Event');
+        }
+
+        function showEditor(data, title) {
+            document.getElementById('editor_title').textContent = title;
+            document.getElementById('events_list').classList.add('hidden');
+            document.getElementById('editor-container').classList.remove('hidden');
+            
+            if (editor) {
+                editor.destroy();
+                editor = null;
+            }
+
+            // If we have existing data, convert the date format
+            if (data.date) {
+                try {
+                    // Convert "Day Month DD, YYYY" to "YYYY-MM-DD" for the date picker
+                    const date = new Date(data.date);
+                    data.date = date.toISOString().split('T')[0];
+                } catch (e) {
+                    console.error('Error converting date:', e);
+                }
+            }
+            
+            const options = {
+                schema: schema,
+                theme: 'html',
+                iconlib: 'bootstrap3',
+                disable_edit_json: true,
+                disable_properties: true,
+                disable_collapse: true,
+                form_name_root: 'event',
+                no_additional_properties: true,
+                required_by_default: true
+            };
+            
+            // Create the editor first
+            editor = new JSONEditor(document.getElementById('jsoneditor'), options);
+            
+            // Wait for the editor to be ready before setting the value
+            setTimeout(() => {
+                try {
+                    editor.setValue(data);
+                } catch (error) {
+                    console.error('Error setting editor value:', error);
+                    alert('Error loading event data. Please try again.');
+                }
+            }, 100);
+        }
+
+        function hideEditor() {
+            document.getElementById('editor-container').classList.add('hidden');
+            document.getElementById('events_list').classList.remove('hidden');
+            if (editor) {
+                editor.destroy();
+                editor = null;
+            }
+            currentEventFile = null;
+        }
+
+        async function saveEvent() {
+            const status = document.getElementById('save_status');
+            try {
+                const eventData = editor.getValue();
+                
+                // Get the date from the editor and format it
+                const dateStr = eventData.date;
+                const formattedDate = formatDateForDisplay(dateStr);
+                eventData.date = formattedDate;  // Update the date in the event data
+                
+                // Create filename from the date
+                const filename = `${formatDateForFilename(dateStr)}.json`;
+                
+                // Save JSON file
+                const response = await fetch(`${API_BASE}/save`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        filename: filename,
+                        data: eventData
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to save event');
+                }
+
+                // Show success message with Git status if available
+                let message = 'Event saved successfully!';
+                if (result.message) {
+                    message += ` ${result.message}`;
+                }
+                if (result.warning) {
+                    message += ` (Warning: ${result.warning})`;
+                }
+                
+                status.textContent = message;
+                status.style.color = result.warning ? 'orange' : 'green';
+                
+                // Reload events list and hide editor
+                await loadEvents();
+                hideEditor();
+            } catch (error) {
+                console.error('Error saving event:', error);
+                status.textContent = `Error: ${error.message}`;
+                status.style.color = 'red';
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadEvents();
+            document.getElementById('save-btn').onclick = saveEvent;
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,192 @@
+/* Admin interface styles */
+.button-container {
+    margin: 20px;
+    text-align: center;
+}
+
+.button-container button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+#save-btn {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+}
+
+#save-btn:hover {
+    background-color: #2a2a2a;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#generate-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#generate-btn:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#cancel-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+#cancel-btn:hover {
+    background-color: #da190b;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#new_event_btn {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 10px 0;
+}
+
+#new_event_btn:hover {
+    background-color: #2a2a2a;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.event-actions button {
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.edit-btn {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+}
+
+.edit-btn:hover {
+    background-color: #2a2a2a;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.delete-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #da190b;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Event list styles */
+.event-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.event-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.event-info {
+    padding: 10px;
+}
+
+.event-info strong {
+    color: var(--color-primary);
+    font-size: 1.1em;
+}
+
+/* Editor container styles */
+#editor-container {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px;
+}
+
+#editor_title {
+    color: var(--color-primary);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* JSON Editor custom styles */
+.jsoneditor {
+    border: 1px solid var(--color-primary) !important;
+    border-radius: 4px !important;
+}
+
+.jsoneditor-menu {
+    background-color: var(--color-background) !important;
+    border-bottom: 1px solid var(--color-primary) !important;
+}
+
+.jsoneditor-statusbar {
+    background-color: var(--color-background) !important;
+    border-top: 1px solid var(--color-primary) !important;
+}
+
+/* Flatpickr calendar styles */
+.flatpickr-calendar {
+    background-color: var(--color-background) !important;
+    border: 1px solid var(--color-primary) !important;
+    border-radius: 4px !important;
+}
+
+.flatpickr-day {
+    color: var(--color-text) !important;
+}
+
+.flatpickr-day.selected {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+}
+
+.flatpickr-day:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.flatpickr-months .flatpickr-month {
+    background-color: var(--color-background) !important;
+    color: var(--color-text) !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    background-color: var(--color-background) !important;
+    color: var(--color-text) !important;
+}
+
+/* Status message styles */
+#save_status {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#save_status:not(:empty) {
+    background-color: rgba(76, 175, 80, 0.1);
+    border: 1px solid #4CAF50;
+} 
