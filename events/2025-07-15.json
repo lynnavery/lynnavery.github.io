@@ -1,5 +1,5 @@
 {
-    "date": "Monday July 15, 2025",
+    "date": "Monday, July 15, 2025",
     "hasPassed": false,
     "artists": [
         {
@@ -25,5 +25,6 @@
     },
     "time": "TBA",
     "price": "TBA",
-    "image": "../img/2024-07-15.png"
+    "image": "../img/2024-07-15.png",
+    "archived": false
 }
