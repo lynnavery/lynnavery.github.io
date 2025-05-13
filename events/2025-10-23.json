@@ -1,0 +1,12 @@
+{
+    "date": "Thursday, October 23, 2025",
+    "artists": [
+        {
+            "name": "Test Event"
+        }
+    ],
+    "venue": {
+        "name": "@ Test Venue"
+    },
+    "price": "100 dollars"
+}
