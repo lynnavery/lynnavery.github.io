@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>please call to book</title>
+    <link rel="stylesheet" href="../style.css">
+    <script>
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '../style.css?v=' + new Date().getTime();
+        document.head.appendChild(link);
+    </script>
+    <meta name="viewport" content="width=device-width" initial-scale="1">
+    <!-- Video.js CSS will be conditionally included -->
+    <script>
+        // This will be replaced with actual event data
+        const eventData = {"date": "Saturday, June 21, 2025", "hasPassed": false, "artists": [{"name": "Auwbe", "link": "https://boomkat.com/products/quilted", "description": "Intimate autotune acoustic pop ballads from Asheville NC, she finds free time from a booming cotton candy business for the first time in NYC!"}, {"name": "Kaho Matsui", "link": "https://kahomatsui.bandcamp.com/", "description": "Prolific, genre hopping, Philly based guitar hero and experimentalist, taking a break from her furious album release schedule"}, {"name": "Jadelain", "link": "https://jadelain.bandcamp.com/album/pumping-a-contrarian-heart", "description": "You might have seen her play guitar or bass in one of your fave brooklyn bands. Solo, she performs her intricate and lace-like melodies on acoustic guitar."}], "venue": {"name": "Cassette, Brooklyn", "link": "https://www.instagram.com/cassettenyc/?hl=en", "address": "68-38 Forest Ave storefront B, Flushing, NY 11385. ADA: 1 flight stairs to basement, no elevator"}, "time": "7:30PM", "price": "$15", "image": "https://steropes.feralhosting.com/ephemera/events/auwbe.png", "upcoming_events": []};
+        
+        // If event has passed, include video.js
+        if (eventData.hasPassed) {
+            const videoCSS = document.createElement('link');
+            videoCSS.rel = 'stylesheet';
+            videoCSS.href = '../css/videojs/video-js.css';
+            document.head.appendChild(videoCSS);
+            
+            const videoCustomCSS = document.createElement('link');
+            videoCustomCSS.rel = 'stylesheet';
+            videoCustomCSS.href = '../css/videojs-custom.css';
+            document.head.appendChild(videoCustomCSS);
+            
+            const videoJS = document.createElement('script');
+            videoJS.src = '../js/videojs/video.min.js';
+            document.head.appendChild(videoJS);
+        }
+    </script>
+    <script src="../js/admin-link.js"></script>
+</head>
+<body>
+    <div class='nav'><a class='title' href='../index.html'>please call to book</a><br>(803)-710-BOOK</div>
+    <div class='date' id="event-date"></div>
+    <div class="grid-container">
+        <div class="grid-item">
+            <h1>Presenting</h1>
+            <ul id="artists-list">
+                <!-- Artists will be inserted here -->
+            </ul>
+        </div>
+     </div>
+    <div class="subgrid-container">
+            <div class="subgrid-item">
+                <h1>Event Details</h1>
+                <ul id="event-details">
+                <!-- Event details will be inserted here -->
+            </ul>
+            </div>
+            
+            <div class="subgrid-item">
+                <h1>Contact</h1>
+                <ul>
+                    <li>lynn@pleasecalltobook.com</li>
+                <li><a href="https://www.instagram.com/pleasecalltobook/">@pleasecalltobook</a></li>
+                <li>(803)-710-BOOK</li>
+            </ul>
+        </div>
+        </div>
+        <div class="grid-container">
+        <div class="grid-item" id="media-container">
+            <!-- Image or videos will be inserted here -->
+        </div>
+        
+ 
+        <div class="grid-item">
+            <h1>More Upcoming Events</h1>
+            <ul id="upcoming-events">
+                <!-- Upcoming events will be inserted here -->
+            </ul>
+        </div>
+    </div>
+    
+            
+        <h1><a class='title' href='../index.html'><< back to home</a></h1>
+    
+
+    <script>
+        // This script will populate the template with event data
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set event date
+            const dateDiv = document.getElementById('event-date');
+            if (eventData.hasPassed) {
+                dateDiv.innerHTML = `Archived Event <br>${eventData.date}`;
+            } else {
+                dateDiv.textContent = eventData.date;
+            }
+
+            // Populate artists
+            const artistsList = document.getElementById('artists-list');
+            eventData.artists.forEach(artist => {
+                const li = document.createElement('li');
+                const artistLink = artist.link ? `<a href="${artist.link}">` : '';
+                const artistLinkEnd = artist.link ? '</a>' : '';
+                const artistDesc = artist.description ? `<br>${artist.description}` : '';
+                li.innerHTML = `<button>${artistLink}${artist.name}${artistLinkEnd}</button>${artistDesc}`;
+                artistsList.appendChild(li);
+                artistsList.appendChild(document.createElement('br'));
+            });
+
+            // Populate event details
+            const eventDetails = document.getElementById('event-details');
+            const details = [
+                `<i>${eventData.date.split(',')[0]}</i>`,
+                eventData.venue.link ? 
+                    `<a href="${eventData.venue.link}">@ ${eventData.venue.name}</a>` :
+                    `@ ${eventData.venue.name}`,
+                eventData.venue.address || '',
+                eventData.hasPassed ? 
+                    `<strike><li>${eventData.time || ''}</li><li>${eventData.price || ''}</li></strike>` :
+                    `<li>${eventData.time || ''}</li><li>${eventData.price || ''}</li>`
+            ].filter(detail => detail !== ''); // Remove empty strings
+            
+            if (!eventData.hasPassed && eventData.ticketLink) {
+                details.push(`<li><a href="${eventData.ticketLink}"><button>Tickets</button></a></li>`);
+            }
+
+            details.forEach(detail => {
+                if (detail) { // Only add non-empty details
+                    const li = document.createElement('li');
+                    li.innerHTML = detail;
+                    eventDetails.appendChild(li);
+                }
+            });
+
+            // Handle media (image or videos)
+            const mediaContainer = document.getElementById('media-container');
+            if (eventData.hasPassed && eventData.videos) {
+                const videoContainer = document.createElement('div');
+                videoContainer.className = 'video-container';
+                eventData.videos.forEach((video, index) => {
+                    const videoElement = document.createElement('video');
+                    videoElement.id = `my-video-${index + 1}`;
+                    videoElement.className = 'video-js vjs-default-skin vjs-9-16';
+                    videoElement.controls = true;
+                    videoElement.preload = 'auto';
+                    videoElement.width = '360';
+                    videoElement.height = '640';
+                    videoElement.setAttribute('data-setup', '{"fluid": true, "aspectRatio": "9:16"}');
+                    
+                    const source = document.createElement('source');
+                    source.src = video.url;
+                    source.type = 'video/mp4';
+                    
+                    const noJsMsg = document.createElement('p');
+                    noJsMsg.className = 'vjs-no-js';
+                    noJsMsg.textContent = 'To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video';
+                    
+                    videoElement.appendChild(source);
+                    videoElement.appendChild(noJsMsg);
+                    videoContainer.appendChild(videoElement);
+                });
+                mediaContainer.appendChild(videoContainer);
+            } else if (eventData.image) {
+                const img = document.createElement('img');
+                img.src = eventData.image;
+                mediaContainer.appendChild(img);
+            }
+
+            // Initialize video.js if needed
+            if (eventData.hasPassed && eventData.videos) {
+                const players = videojs.getAllPlayers();
+                players.forEach(function(player) {
+                    player.ready(function() {
+                        console.log('Player ready:', player.id());
+                    });
+                });
+            }
+
+            // Populate upcoming events
+            const upcomingEventsList = document.getElementById('upcoming-events');
+            if (eventData.upcoming_events && eventData.upcoming_events.length > 0) {
+                eventData.upcoming_events.forEach(event => {
+                    const li = document.createElement('li');
+                    const date_filename = event.date.split(',')[0].split(' ').slice(-2).join(' ');  // Get "Month Day"
+                    const artists = event.artists.map(artist => artist.name).join(', ');
+                    const venue = event.venue.name;
+                    li.innerHTML = `<a href="${date_to_filename(event.date)}.html"><button><i>${date_filename}</i> ${artists}<br>@ ${venue}</button></a>`;
+                    upcomingEventsList.appendChild(li);
+                });
+                // Add "More tba" at the end
+                const moreLi = document.createElement('li');
+                moreLi.innerHTML = '<i>More tba</i>';
+                upcomingEventsList.appendChild(moreLi);
+            } else {
+                const noEventsLi = document.createElement('li');
+                noEventsLi.innerHTML = '<i>More tba</i>';
+                upcomingEventsList.appendChild(noEventsLi);
+            }
+        });
+
+        // Helper function to convert date to filename format
+        function date_to_filename(date_str) {
+            const months = {
+                'January': '01', 'February': '02', 'March': '03', 'April': '04',
+                'May': '05', 'June': '06', 'July': '07', 'August': '08',
+                'September': '09', 'October': '10', 'November': '11', 'December': '12'
+            };
+            const parts = date_str.split(',')[0].split(' ');
+            const month = months[parts[1]];
+            const day = parts[2].padStart(2, '0');
+            const year = date_str.split(',')[1].trim();
+            return `${year}-${month}-${day}`;
+        }
+    </script>
+</body>
+</html> 
