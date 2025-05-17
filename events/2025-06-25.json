@@ -1,16 +1,16 @@
 {
-    "date": "Tuesday, June 25, 2025",
+    "date": "Wednesday, June 25, 2025",
     "hasPassed": false,
     "artists": [
         {
             "name": "Auwbe",
             "link": "",
-            "description": ""
+            "description": "Intimate autotune acoustic pop ballads from Asheville NC"
         },
         {
             "name": "Kaho Matsui",
             "link": "",
-            "description": ""
+            "description": "Philly based guitar hero"
         },
         {
             "name": "Jadelain",
@@ -21,10 +21,9 @@
     "venue": {
         "name": "Cassette, Brooklyn",
         "link": "",
-        "address": ""
+        "address": "68-38 Forest Ave storefront B, Flushing, NY 11385. ADA: 1 flight stairs to basement, no elevator"
     },
     "time": "TBA",
     "price": "TBA",
-    "image": "../img/2024-06-25.png",
-    "archived": false
+    "image": "img/auwbe.png"
 }
