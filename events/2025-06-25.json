@@ -4,18 +4,18 @@
     "artists": [
         {
             "name": "Auwbe",
-            "link": "",
+            "link": "https://boomkat.com/products/quilted",
             "description": "Intimate autotune acoustic pop ballads from Asheville NC"
         },
         {
             "name": "Kaho Matsui",
-            "link": "",
-            "description": "Philly based guitar hero"
+            "link": "https://kahomatsui.bandcamp.com/",
+            "description": "Prolific, genre hopping, Philly based guitar hero and experimentalist"
         },
         {
             "name": "Jadelain",
-            "link": "",
-            "description": ""
+            "link": "https://jadelain.bandcamp.com/album/pumping-a-contrarian-heart",
+            "description": "You might have seen her play guitar or bass in one of many brooklyn bands. Solo, she performs her intricate and lace-like melodies on acoustic guitar."
         }
     ],
     "venue": {
