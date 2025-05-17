@@ -112,6 +112,7 @@
                     `<a href="${eventData.venue.link}">@ ${eventData.venue.name}</a>` :
                     `@ ${eventData.venue.name}`,
                 eventData.venue.address || '',
+                eventData.venue.description ? `<p class="venue-description">${eventData.venue.description}</p>` : '',
                 eventData.hasPassed ? 
                     `<strike><li>${eventData.time || ''}</li><li>${eventData.price || ''}</li></strike>` :
                     `<li>${eventData.time || ''}</li><li>${eventData.price || ''}</li>`

@@ -21,7 +21,8 @@
     "venue": {
         "name": "Cassette, Brooklyn",
         "link": "https://www.instagram.com/cassettenyc/?hl=en",
-        "address": "68-38 Forest Ave storefront B, Flushing, NY 11385. ADA: 1 flight stairs to basement, no elevator"
+        "address": "68-38 Forest Ave storefront B, Flushing, NY 11385.",
+        "description": "1 flight of stairs down, no elevator."
     },
     "time": "7:30PM",
     "price": "$15",
