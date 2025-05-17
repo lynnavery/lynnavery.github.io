@@ -1,21 +1,21 @@
 {
-    "date": "Wednesday, June 25, 2025",
+    "date": "Tuesday, June 24, 2025",
     "hasPassed": false,
     "artists": [
         {
             "name": "Auwbe",
             "link": "https://boomkat.com/products/quilted",
-            "description": "Intimate autotune acoustic pop ballads from Asheville NC"
+            "description": "Intimate autotune acoustic pop ballads from Asheville NC, she finds free time from a booming cotton candy business for the first time in NYC!"
         },
         {
             "name": "Kaho Matsui",
             "link": "https://kahomatsui.bandcamp.com/",
-            "description": "Prolific, genre hopping, Philly based guitar hero and experimentalist"
+            "description": "Prolific, genre hopping, Philly based guitar hero and experimentalist, taking a break from her furious album release schedule"
         },
         {
             "name": "Jadelain",
             "link": "https://jadelain.bandcamp.com/album/pumping-a-contrarian-heart",
-            "description": "You might have seen her play guitar or bass in one of many brooklyn bands. Solo, she performs her intricate and lace-like melodies on acoustic guitar."
+            "description": "You might have seen her play guitar or bass in one of your fave brooklyn bands. Solo, she performs her intricate and lace-like melodies on acoustic guitar."
         }
     ],
     "venue": {
@@ -25,5 +25,5 @@
     },
     "time": "7:30PM",
     "price": "$15",
-    "image": "img/auwbe.png"
+    "image": "https://steropes.feralhosting.com/ephemera/events/auwbe.png"
 }
