@@ -5,12 +5,12 @@
         {
             "name": "Auwbe",
             "link": "https://boomkat.com/products/quilted",
-            "description": "Intimate autotune acoustic pop ballads from Asheville NC"
+            "description": "Intimate autotune acoustic pop ballads from Asheville NC, she finds free time from a booming cotton candy business for the first time in NYC!"
         },
         {
             "name": "Kaho Matsui",
             "link": "https://kahomatsui.bandcamp.com/",
-            "description": "Prolific, genre hopping, Philly based guitar hero and experimentalist"
+            "description": "Prolific, genre hopping, Philly based guitar hero and experimentalist, casually "
         },
         {
             "name": "Jadelain",
@@ -25,5 +25,5 @@
     },
     "time": "7:30PM",
     "price": "$15",
-    "image": "/events/img/auwbe.png"
+    "image": "img/auwbe.png"
 }
