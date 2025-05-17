@@ -14,7 +14,7 @@
     <!-- Video.js CSS will be conditionally included -->
     <script>
         // This will be replaced with actual event data
-        const eventData = {"date": "Wednesday, June 25, 2025", "hasPassed": false, "artists": [{"name": "Auwbe", "link": "https://boomkat.com/products/quilted", "description": "Intimate autotune acoustic pop ballads from Asheville NC"}, {"name": "Kaho Matsui", "link": "https://kahomatsui.bandcamp.com/", "description": "Prolific, genre hopping, Philly based guitar hero and experimentalist"}, {"name": "Jadelain", "link": "https://jadelain.bandcamp.com/album/pumping-a-contrarian-heart", "description": "You might have seen her play guitar or bass in one of many brooklyn bands. Solo, she performs her intricate and lace-like melodies on acoustic guitar."}], "venue": {"name": "Cassette, Brooklyn", "link": "https://www.instagram.com/cassettenyc/?hl=en", "address": "68-38 Forest Ave storefront B, Flushing, NY 11385. ADA: 1 flight stairs to basement, no elevator"}, "time": "7:30PM", "price": "$15", "image": "img/auwbe.png", "upcoming_events": []};
+        const eventData = {"date": "Wednesday, June 25, 2025", "hasPassed": false, "artists": [{"name": "Auwbe", "link": "https://boomkat.com/products/quilted", "description": "Intimate autotune acoustic pop ballads from Asheville NC, she finds free time from a booming cotton candy business for the first time in NYC!"}, {"name": "Kaho Matsui", "link": "https://kahomatsui.bandcamp.com/", "description": "Prolific, genre hopping, Philly based guitar hero and experimentalist, taking a break from her furious album release schedule"}, {"name": "Jadelain", "link": "https://jadelain.bandcamp.com/album/pumping-a-contrarian-heart", "description": "You might have seen her play guitar or bass in one of your fave brooklyn bands. Solo, she performs her intricate and lace-like melodies on acoustic guitar."}], "venue": {"name": "Cassette, Brooklyn", "link": "https://www.instagram.com/cassettenyc/?hl=en", "address": "68-38 Forest Ave storefront B, Flushing, NY 11385.", "description": "1 flight of stairs down, no elevator."}, "time": "7:30PM", "price": "$15", "image": "https://steropes.feralhosting.com/ephemera/events/auwbe.png", "upcoming_events": []};
         
         // If event has passed, include video.js
         if (eventData.hasPassed) {
@@ -112,6 +112,7 @@
                     `<a href="${eventData.venue.link}">@ ${eventData.venue.name}</a>` :
                     `@ ${eventData.venue.name}`,
                 eventData.venue.address || '',
+                eventData.venue.description ? `<p class="venue-description">${eventData.venue.description}</p>` : '',
                 eventData.hasPassed ? 
                     `<strike><li>${eventData.time || ''}</li><li>${eventData.price || ''}</li></strike>` :
                     `<li>${eventData.time || ''}</li><li>${eventData.price || ''}</li>`
