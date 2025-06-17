@@ -20,6 +20,7 @@ ul li {
 	border-top: 2px solid var(--color-primary);
 	border-bottom: 2px solid var(--color-primary);
 	margin-bottom: 10px;
+	position: relative; /* Add this to position the admin link */
 }
 .date {
 	text-align: center;
@@ -246,4 +247,26 @@ img {
 	overflow: hidden; /* Consistent with script */
 	margin: 20px auto;
 	/* The height will be automatically set by the aspect ratio */
+}
+
+.admin-link {
+	position: absolute;
+	right: 24px;
+	top: 50%;
+	transform: translateY(-50%);
+
+	opacity: 1;
+}
+
+.admin-link:hover {
+	opacity: 1;
+	text-decoration: underline;
+}
+
+.venue-description {
+    font-style: italic;
+    margin: 10px 0;
+    line-height: 1.5;
+    color: var(--color-text);
+    opacity: 0.9;
 }

@@ -189,4 +189,40 @@
 #save_status:not(:empty) {
     background-color: rgba(76, 175, 80, 0.1);
     border: 1px solid #4CAF50;
+}
+
+/* Custom styles for description textarea */
+.jsoneditor textarea[data-schematype="string"][data-schemapath*="description"] {
+    min-height: 100px !important;
+    resize: vertical !important;
+    width: 100% !important;
+}
+
+/* Specific styles for artist descriptions */
+.jsoneditor textarea[data-schemapath*="artists"][data-schemapath*="description"] {
+    min-height: 150px !important;
+    resize: vertical !important;
+    width: 100% !important;
+    font-family: inherit !important;
+    line-height: 1.5 !important;
+    padding: 8px !important;
+}
+
+/* Hide child fields when parent checkbox is unchecked */
+.jsoneditor .je-hidden {
+    display: none !important;
+}
+
+/* Style for conditional fields */
+.jsoneditor .je-conditional-field {
+    margin-left: 20px;
+    padding-left: 10px;
+    border-left: 2px solid var(--color-primary);
+    transition: all 0.3s ease;
+}
+
+/* Style for checkbox labels */
+.jsoneditor .je-checkbox-label {
+    font-weight: bold;
+    cursor: pointer;
 } 
