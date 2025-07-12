@@ -1,16 +1,16 @@
 {
-    "date": "Monday, July 15, 2025",
+    "date": "Tuesday, July 15, 2025",
     "hasPassed": false,
     "artists": [
         {
             "name": "Briana Marela",
-            "link": "",
-            "description": ""
+            "link": "https://brianamarela.bandcamp.com/",
+            "description": "Briana Marela is a Peruvian American composer/artist based in Bay Area CA. Her live set varies from experimental, electronic and ambient to lyrically forward pop music, controlled via creative, self developed live visual feedback devices"
         },
         {
             "name": "alicedoescomputermusic",
-            "link": "",
-            "description": ""
+            "link": "https://alicedoescomputermusic.com/",
+            "description": "Experimental electronic bemusings via hardware and cello from the busy NY based Alice"
         },
         {
             "name": "Pink Must",
@@ -20,11 +20,12 @@
     ],
     "venue": {
         "name": "Nightclub101, Brooklyn",
-        "link": "",
-        "address": ""
+        "link": "Briana Marela is a Peruvian American composer/artist raised in Seattle, WA. Her music varies from experimental, electronic and ambient to lyrically forward pop music.",
+        "address": "101 Avenue A, New York, NY",
+        "description": "ADA accessible, no stairs, no mask requirement"
     },
-    "time": "TBA",
-    "price": "TBA",
-    "image": "../img/2024-07-15.png",
-    "archived": false
+    "time": "9:30 Doors",
+    "price": "$15 adv, $20 door",
+    "ticketLink": "https://www.ticketweb.com/event/pink-must-briana-marela-alice-night-club-101-tickets/13816234",
+    "image": "../img/2024-07-15.png"
 }
