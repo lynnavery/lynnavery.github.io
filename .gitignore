@@ -21,10 +21,15 @@ build/
 
 # Server scripts
 start-server.sh
+start-admin.sh
+SERVER_CONFIG.md
+SERVER_SETUP.md
+test-events.py
 
 # Environment variables
 .env
 admin/.env
+admin/
 
 # Python
 __pycache__/
